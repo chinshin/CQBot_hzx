@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from cqhttp import CQHttp
 import setting
 import modian
@@ -9,6 +10,10 @@ bot = CQHttp(api_root='http://127.0.0.1:5700/')
 @bot.on_message('group')
 def handle_msg(context):
     if context['group_id'] == setting.groupid() and context['user_id'] != context['self_id']:
+        if setting.shutup():
+            for word in setting.shutup():
+                if word in context['message']:
+                    bot.set_group_ban(group_id=setting.groupid(), user_id=context['user_id'], duration=30*60)
         if context['message'] == '集资' or context['message'] == 'jz' or context['message'] == '打卡' or context['message'] == 'dk':
             jz = ''
             jz += setting.wds_name() + '\n' + setting.wds_url()
@@ -22,12 +27,15 @@ def handle_msg(context):
             bot.send(context, duzhan)
         elif context['message'] == '欢迎新人':
             bot.send(context, setting.welcome())
+        elif context['message'] == '项目进度' or context['message'] == '进度':
+            jd = modian.result() + '\n' + setting.wds_url()
+            bot.send(context, jd)
 
 
 @bot.on_event('group_increase')
 def handle_group_increase(context):
     ret = bot.get_stranger_info(user_id=context['user_id'], no_cache=False)
-    welcome = '欢迎新成员:' + ret['nickname'] + ' 加入本群\n' + setting.welcome()
+    welcome = '欢迎新聚聚：@' + ret['nickname'] + ' 加入本群\n\n' + setting.welcome()
     bot.send(context, message=welcome, is_raw=True)  # 发送欢迎新人
 
 
