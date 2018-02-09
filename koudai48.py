@@ -23,7 +23,7 @@ def getTime13():
 
 
 def roomMsg():
-    bot = CQHttp(api_root='http://127.0.0.1:5700/')
+    # bot = CQHttp(api_root='http://127.0.0.1:5700/')
     # request
     ajax_url = 'https://pjuju.48.cn/imsystem/api/im/v1/member/room/message/mainpage'
     header = {
@@ -118,7 +118,8 @@ def roomMsg():
                 msg_array.append(msg)
             setting.write_kdmsg_time13(kdmsgTime13)
     # 获取失败，检查token
-    elif response['status'] == 401 and response['message'] == '授权验证失败':
+    # elif response['status'] == 401 and response['message'] == '授权验证失败':
+    elif response['status'] == 401:
         WARN('koudai48.py授权验证失败')
         if not setting.token_verify():
             WARN('token失效，尝试获取新token')

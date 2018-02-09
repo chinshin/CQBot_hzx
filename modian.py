@@ -116,7 +116,7 @@ def rank(type):
 def result(pro_id):
     response = getDetail(pro_id)
     msg = '当前项目信息：\n'
-    msg += response['data'][0]['pro_name'] + '\n' + '项目进度：' + response['data'][0]['already_raised'] + '/' + response['data'][0]['goal'] + '\n结束时间：' + response['data'][0]['end_time']
+    msg += response['data'][0]['pro_name'] + '\n' + '项目进度：' + str(response['data'][0]['already_raised']) + '/' + response['data'][0]['goal'] + '\n结束时间：' + response['data'][0]['end_time']
     return msg
 
 

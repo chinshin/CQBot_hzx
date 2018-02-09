@@ -28,7 +28,7 @@ def handle_msg(context):
         elif context['message'] == '欢迎新人':
             bot.send(context, setting.welcome())
         elif context['message'] == '项目进度' or context['message'] == '进度':
-            jd = modian.result() + '\n' + setting.wds_url()
+            jd = modian.result(setting.pro_id()) + '\n' + setting.wds_url()
             bot.send(context, jd)
 
 

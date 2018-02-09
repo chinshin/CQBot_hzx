@@ -85,7 +85,7 @@ def getRoomMsg(delay):
             msg_array.reverse()
             for msgdata in msg_array:
                 bot.send_group_msg_async(group_id=groupid(), message=msgdata, auto_escape=False)
-    time.sleep(int(delay))
+        time.sleep(int(delay))
 
 
 try:
