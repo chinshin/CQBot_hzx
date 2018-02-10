@@ -7,7 +7,7 @@ import copy
 from weibo import getidarray, get_5_idarray, checkretweet, checkpic, getscheme, getretweetweibo, getweibo, getpic
 from setting import groupid
 from koudai48 import roomMsg
-from CQLog import INFO
+from CQLog import INFO, WARN
 
 
 global weibo_id_array
@@ -80,12 +80,19 @@ def getWeibo(delay):
 def getRoomMsg(delay):
     bot = CQHttp(api_root='http://127.0.0.1:5700/')
     while True:
-        msg_array = roomMsg()
-        if msg_array:
-            msg_array.reverse()
-            for msgdata in msg_array:
-                bot.send_group_msg_async(group_id=groupid(), message=msgdata, auto_escape=False)
-        time.sleep(int(delay))
+        try:
+            msg_array = roomMsg()
+            if msg_array:
+                msg_array.reverse()
+                for msgdata in msg_array:
+                    bot.send_group_msg_async(group_id=groupid(), message=msgdata, auto_escape=False)
+        except Exception as e:
+            # WARN(str(e))
+            raise e
+        else:
+            pass
+        finally:
+            time.sleep(int(delay))
 
 
 try:
