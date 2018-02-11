@@ -63,13 +63,13 @@ def roomMsg():
         kdmsgTime13 = response['content']['data'][0]['msgTime']
         # 超过60s的消息会被丢弃
         if sysTime13 > cfgTime13 + 60000:
-            setting.write_kdmsg_time13(kdmsgTime13)
+            setting.write_kdmsg_time13(sysTime13-60000)
         elif cfgTime13 == kdmsgTime13:
             pass
         elif cfgTime13 > kdmsgTime13:
             # 说明有撤回消息
             pass
-        elif cfgTime13 < kdmsgTime13:
+        if setting.read_kdmsg_time13() < kdmsgTime13:
             # 有新消息
             datas = response['content']['data']
             for data in datas:
