@@ -88,7 +88,8 @@ def getRoomMsg(delay):
                     bot.send_group_msg_async(group_id=groupid(), message=msgdata, auto_escape=False)
         except Exception as e:
             # WARN(str(e))
-            raise e
+            # raise e
+            print('get room msg func error')
         else:
             pass
         finally:
