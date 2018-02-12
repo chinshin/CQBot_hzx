@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from cqhttp import CQHttp
+# from cqhttp import CQHttp
 import json
 import time
 import setting
 import requests
 import urllib3
-from CQLog import DEBUG, WARN, INFO
+from CQLog import WARN, INFO
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
@@ -87,7 +87,7 @@ def roomMsg():
                         # 20171221 16:38 黄子璇(roomid=9108720)发生err：翻牌信息未返回faipaiName
                         try:
                             msg = ('%s：%s\n%s：%s\n%s' % (extInfo['senderName'], extInfo['messageText'], extInfo['faipaiName'], extInfo['faipaiContent'], data['msgTimeStr']))
-                        except:
+                        except Exception as e:
                             msg = ('%s：%s\n翻牌：%s\n%s' % (extInfo['senderName'], extInfo['messageText'], extInfo['faipaiContent'], data['msgTimeStr']))
                         #
                     elif extInfo['messageObject'] == 'live':
@@ -99,7 +99,8 @@ def roomMsg():
                         msg = ('%s：%s\n问题内容：%s\n%s' % (extInfo['senderName'], extInfo['idolFlipTitle'], extInfo['idolFlipContent'], data['msgTimeStr']))
                     else:
                         msg = '有未知格式的文字消息'
-                        INFO(str(extInfo))
+                        INFO('有未知格式的文字消息')
+                        INFO(extInfo)
                 # image
                 elif data['msgType'] == 1:
                     bodys = json.loads(data['bodys'])
@@ -114,7 +115,8 @@ def roomMsg():
                     msg = ('【口袋48房间视频】\n %s：%s\n%s' % (extInfo['senderName'], bodys['url'], data['msgTimeStr']))
                 else:
                     msg = '有未知类型的消息'
-                    INFO(str(data))
+                    INFO('有未知类型的消息')
+                    INFO(data)
                 msg_array.append(msg)
             setting.write_kdmsg_time13(kdmsgTime13)
     # 获取失败，检查token

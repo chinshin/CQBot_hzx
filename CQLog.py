@@ -8,6 +8,7 @@ LOG_FILE = os.path.join(BASE_DIR, 'tst.log')
 
 handler = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes=1024 * 1024, backupCount=5, encoding='utf-8')  # 实例化handler
 fmt = '%(asctime)s - %(levelname)s - %(message)s'
+# fmt = '%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s - %(message)s'
 
 formatter = logging.Formatter(fmt)  # 实例化formatter
 handler.setFormatter(formatter)  # 为handler添加formatter
@@ -27,3 +28,11 @@ def DEBUG(text):
 
 def WARN(text):
     logger.warn(str(text))
+
+
+def ERROR(text):
+    logger.error(str(text), exc_info=True)
+
+
+def CRITICAL(text):
+    logger.critical(str(text))

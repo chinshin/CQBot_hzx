@@ -5,15 +5,23 @@ import modian
 
 
 bot = CQHttp(api_root='http://127.0.0.1:5700/')
+# 也可以添加access_token和secret，更加安全
+# bot = CQHttp(api_root='http://127.0.0.1:5700/',
+#              access_token='your-token',
+#              secret='your-secret')
+# 如果设置了access_token和secret，请修改http-API插件的配置文件中对应的部分
 
 
+# 群消息操作
 @bot.on_message('group')
 def handle_msg(context):
     if context['group_id'] == setting.groupid() and context['user_id'] != context['self_id']:
+        # 关键词禁言
         if setting.shutup():
             for word in setting.shutup():
                 if word in context['message']:
                     bot.set_group_ban(group_id=setting.groupid(), user_id=context['user_id'], duration=30*60)
+        # 关键词回复
         if context['message'] == '集资' or context['message'] == 'jz' or context['message'] == '打卡' or context['message'] == 'dk':
             jz = ''
             jz += setting.wds_name() + '\n' + setting.wds_url()
@@ -32,6 +40,7 @@ def handle_msg(context):
             bot.send(context, jd)
 
 
+# 新人加群提醒
 @bot.on_event('group_increase')
 def handle_group_increase(context):
     ret = bot.get_stranger_info(user_id=context['user_id'], no_cache=False)
@@ -39,4 +48,5 @@ def handle_group_increase(context):
     bot.send(context, message=welcome, is_raw=True)  # 发送欢迎新人
 
 
+# 如果修改了端口，请修改http-API插件的配置文件中对应的post_url
 bot.run(host='127.0.0.1', port=8080)
