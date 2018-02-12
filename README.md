@@ -10,6 +10,8 @@
 
 本项目代码逻辑由基于qqbot（webqq）的 [chinshin/qqbot_hzx](https://github.com/chinshin/qqbot_hzx) 移植而来，并作少许修改。
 
+**更多功能，可以试试我的网站  [RealFairy.cn/idol](https://RealFairy.cn/idol)**
+
 ------
 
 环境：`Windows Server` + `Python3`
