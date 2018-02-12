@@ -26,11 +26,13 @@
 3. 安装`cqhttp`，终端输入：`pip install cqhttp`，环境为py2的使用pip3安装；
 4. （可选）修改 `group.py` - Line 7 和 `main.py` - Line 14 ：
 
+
 	```
-bot = CQHttp(api_root='http://127.0.0.1:5700/',
-                 access_token='your-token',
-                 secret='your-secret')
-```
+		bot = CQHttp(api_root='http://127.0.0.1:5700/',
+		             access_token='your-token',
+		             secret='your-secret')
+	```
+	
 	其中`access_token`和`secret`可以不设置；
 
 5. 修改酷Q文件夹下`app\io.github.richardchien.coolqhttpapi\`下配置文件，将`post_url`的值修改为`http://127.0.0.1:8080/`，具体端口与`group.py`中最后一行设置的`bot.run`端口相同；如果在第4步中设置了`access_token`和`secret`，则也要在配置文件中设置对应项；
