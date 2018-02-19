@@ -5,13 +5,17 @@ import time
 from modian import newOrder
 import copy
 from weibo import getidarray, get_5_idarray, checkretweet, checkpic, getscheme, getretweetweibo, getweibo, getpic
-from setting import groupid
+from setting import groupid, md_interval, kd_interval, wb_interval
 from koudai48 import roomMsg
 from CQLog import INFO, WARN
+# 引入时间调度器 apscheduler 的 BlockingScheduler
+from apscheduler.schedulers.blocking import BlockingScheduler
 
 
 # 与group.py设置一样
 bot = CQHttp(api_root='http://127.0.0.1:5700/')
+# 实例化 BlockingScheduler
+sched = BlockingScheduler()
 
 global weibo_id_array
 global firstcheck_weibo
@@ -19,22 +23,24 @@ global firstcheck_weibo
 weibo_id_array = []
 firstcheck_weibo = True
 
+# 查询时间间隔初始化
+interval_md = md_interval()
+interval_wb = wb_interval()
+interval_kd = kd_interval()
 
-def printStrTime():
-    t = int(time.time()*1000)
-    x = time.localtime(t / 1000)
-    time_str = time.strftime('%Y-%m-%d %H:%M:%S', x)
-    return time_str
+# # 获取酷q版本
+# version_dict = bot.get_version_info()
+# version = version_dict['coolq_edition']
 
 
-def getModian(delay):
+def getModian():
     # bot = CQHttp(api_root='http://127.0.0.1:5700/')
     while True:
         try:
             # INFO(printStrTime() + 'check modian')
             INFO('check modian')
             stampTime = int(time.time())
-            msgDict = newOrder(stampTime, int(delay))
+            msgDict = newOrder(stampTime, int(interval_md))
             if msgDict:
                 for msg in msgDict['msg']:
                     msg += msgDict['end']
@@ -46,10 +52,9 @@ def getModian(delay):
         finally:
             # INFO(printStrTime() + 'modian check completed')
             INFO('modian check completed')
-            time.sleep(int(delay))
 
 
-def getWeibo(delay):
+def getWeibo():
     # bot = CQHttp(api_root='http://127.0.0.1:5700/')
     while True:
         try:
@@ -90,10 +95,9 @@ def getWeibo(delay):
         finally:
             # INFO(printStrTime() + 'weibo check completed')
             INFO('weibo check completed')
-            time.sleep(int(delay))
 
 
-def getRoomMsg(delay):
+def getRoomMsg():
     # bot = CQHttp(api_root='http://127.0.0.1:5700/')
     while True:
         try:
@@ -111,22 +115,14 @@ def getRoomMsg(delay):
             pass
         finally:
             INFO('room-check completed')
-            time.sleep(int(delay))
 
 
-try:
-    # 摩点查询线程，时间间隔30s
-    # 可修改查询时间间隔。由于摩点API缓存时间为5s，因此时间间隔不建议小于5s
-    _thread.start_new_thread(getModian, (30,))
-    # 微博查询线程，时间间隔60s
-    # 可修改查询时间间隔。不建议小于一分钟
-    _thread.start_new_thread(getWeibo, (60,))
-    # 口袋房间查询线程，时间间隔30s
-    # 可修改查询时间间隔。不建议小于5s（会被口袋banIP）；如果小于5s，请一定要在setting.conf中设置代理
-    _thread.start_new_thread(getRoomMsg, (30,))
-except Exception as e:
-    WARN('error when start thread')
-    # print(printStrTime() + 'Error:  unable to start thread')
-
-while True:
-    pass
+# 添加调度任务， 间隔为 0 则不添加
+if interval_md != 0:
+    sched.add_job(getModian, 'interval', seconds=interval_md)
+if interval_wb != 0:
+    sched.add_job(getWeibo, 'interval', seconds=interval_wb)
+if interval_kd != 0:
+    sched.add_job(getRoomMsg, 'interval', seconds=interval_kd)
+# 开始调度任务
+sched.start()

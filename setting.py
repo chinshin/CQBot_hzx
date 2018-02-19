@@ -24,7 +24,7 @@ def idol_name():
 # ----------------------摩点微打赏设置----------------------
 
 
-# 微打赏名称
+# 摩点名称
 def wds_name():
     BASE_DIR = os.path.dirname(__file__)
     file_path = os.path.join(BASE_DIR, 'setting.conf')
@@ -39,7 +39,7 @@ def wds_name():
     return str(modian_name)
 
 
-# 微打赏网址 建议使用短地址t.cn
+# 摩点网址 建议使用短网址
 def wds_url():
     BASE_DIR = os.path.dirname(__file__)
     file_path = os.path.join(BASE_DIR, 'setting.conf')
@@ -54,7 +54,7 @@ def wds_url():
     return str(modian_url)
 
 
-# 微打赏项目对应pro_id
+# 摩点项目对应pro_id
 def pro_id():
     BASE_DIR = os.path.dirname(__file__)
     file_path = os.path.join(BASE_DIR, 'setting.conf')
@@ -67,6 +67,18 @@ def pro_id():
         # modian_url = cf.get('modian', 'url')
         pro_id = cf.get('modian', 'pro_id')
     return int(pro_id)
+
+
+# 摩点查询时间间隔读取
+def md_interval():
+    BASE_DIR = os.path.dirname(__file__)
+    file_path = os.path.join(BASE_DIR, 'setting.conf')
+    cf = configparser.ConfigParser()
+    with open(file_path, 'r', encoding='utf-8') as cfgfile:
+        cf.readfp(cfgfile)
+        # modian
+        interval = cf.get('modian', 'interval')
+    return int(interval)
 
 
 # # 获取配置中存储的集资消息时间
@@ -241,6 +253,17 @@ def getNewToken():
             return response['message']
 
 
+# 口袋48房间查询时间间隔读取
+def kd_interval():
+    BASE_DIR = os.path.dirname(__file__)
+    file_path = os.path.join(BASE_DIR, 'setting.conf')
+    cf = configparser.ConfigParser()
+    with open(file_path, 'r', encoding='utf-8') as cfgfile:
+        cf.readfp(cfgfile)
+        interval = cf.get('koudai48', 'interval')
+    return int(interval)
+
+
 # --------------------------------------------------------
 
 
@@ -318,6 +341,17 @@ def weibo_id():
         cf.readfp(cfgfile)
         weibo_id = cf.get('weibo', 'weiboID')
     return int(weibo_id)
+
+
+# weibo房间查询时间间隔读取
+def wb_interval():
+    BASE_DIR = os.path.dirname(__file__)
+    file_path = os.path.join(BASE_DIR, 'setting.conf')
+    cf = configparser.ConfigParser()
+    with open(file_path, 'r', encoding='utf-8') as cfgfile:
+        cf.readfp(cfgfile)
+        interval = cf.get('weibo', 'interval')
+    return int(interval)
 
 
 # --------------------------------------------------------
