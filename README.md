@@ -19,13 +19,21 @@
 
 ## 更新记录
 
+**2018.02.19更新：** 
 
+1.引入定时任务框架`apscheduler`，删除了死循环的辣鸡写法，极大降低CPU占用；
+
+2.将摩点、口袋、微博查询间隔设置移入`setting.conf`，任意一项设置为0则不启用该项功能；
+
+3.改进了`group.py`中群成员增加方法，现在只对设置文件中的指定群有效，并且at有效；
+
+4.改动的文件有`setting.conf`、`setting.py`、`group.py`和`main.py`四个
 
 ## 使用方法
 
 1. win server: 安装酷Q Air／Pro，进入开发者模式；
 2. 把 `io.github.richardchien.coolqhttpapi.cpk`([release地址](https://github.com/richardchien/coolq-http-api/releases)) 加入酷Q文件夹下app文件夹，重启酷Q并在应用管理中打开该http-api；
-3. 安装`cqhttp`，终端输入：`pip install cqhttp`，环境为py2的使用pip3安装；
+3. 安装`cqhttp` 和 `apscheduler`，终端输入：`pip install cqhttp` 和 `pip install apscheduler `，环境为py2的使用pip3安装；
 4. （可选）修改 `group.py` - Line 7 和 `main.py` - Line 14 ：
 
 
