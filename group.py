@@ -24,19 +24,32 @@ def handle_msg(context):
         # 关键词回复
         if context['message'] == '集资' or context['message'] == 'jz' or context['message'] == '打卡' or context['message'] == 'dk':
             jz = ''
-            jz += setting.wds_name() + '\n' + setting.wds_url()
+            jz_array = modian.md_init(setting.pro_id())
+            for jz_dict in jz_array:
+                jz += jz_dict['name'] + '\n' + jz_dict['url_short'] + '\n'
             bot.send(context, jz)
         elif context['message'] == 'wds20' or context['message'] == 'jz20' or context['message'] == 'rank' or context['message'] == '聚聚榜' or context['message'] == 'jzb' or context['message'] == '集资榜':
-            bot.send(context, modian.rank(1))
+            rank1_array = modian.rank(1)
+            for rank1_msg in rank1_array:
+                bot.send(context, rank1_msg)
         elif context['message'] == 'dkb' or context['message'] == '打卡榜' or context['message'] == 'dk20' or context['message'] == 'dakabang':
-            bot.send(context, modian.rank(2))
+            rank2_array = modian.rank(2)
+            for rank2_msg in rank2_array:
+                bot.send(context, rank2_msg)
         elif "独占" in context['message']:
-            duzhan = "独占请集资" + '\n' + setting.wds_name() + '\n' + setting.wds_url()
+            dz = ''
+            dz_array = modian.md_init(setting.pro_id())
+            for dz_dict in dz_array:
+                dz += dz_dict['name'] + '\n' + dz_dict['url_short'] + '\n'
+            duzhan = "独占请集资" + '\n' + dz
             bot.send(context, duzhan)
         elif context['message'] == '欢迎新人':
             bot.send(context, setting.welcome())
         elif context['message'] == '项目进度' or context['message'] == '进度':
-            jd = modian.result(setting.pro_id()) + '\n' + setting.wds_url()
+            jd_array = modian.result(setting.pro_id())
+            jd = ''
+            for jd_msg in jd_array:
+                jd += jd_msg + '\n'
             bot.send(context, jd)
 
 

@@ -24,34 +24,34 @@ def idol_name():
 # ----------------------摩点微打赏设置----------------------
 
 
-# 摩点名称
-def wds_name():
-    BASE_DIR = os.path.dirname(__file__)
-    file_path = os.path.join(BASE_DIR, 'setting.conf')
-    cf = configparser.ConfigParser()
-    # with open(file_path, 'r') as cfgfile:
-    with open(file_path, 'r', encoding='utf-8') as cfgfile:
-        cf.readfp(cfgfile)
-        # modian
-        modian_name = cf.get('modian', 'name')
-        # modian_url = cf.get('modian', 'url')
-        # pro_id = cf.get('modian', 'pro_id')
-    return str(modian_name)
-
-
-# 摩点网址 建议使用短网址
-def wds_url():
-    BASE_DIR = os.path.dirname(__file__)
-    file_path = os.path.join(BASE_DIR, 'setting.conf')
-    cf = configparser.ConfigParser()
-    # with open(file_path, 'r') as cfgfile:
-    with open(file_path, 'r', encoding='utf-8') as cfgfile:
-        cf.readfp(cfgfile)
-        # modian
-        # modian_name = cf.get('modian', 'name')
-        modian_url = cf.get('modian', 'url')
-        # pro_id = cf.get('modian', 'pro_id')
-    return str(modian_url)
+# # 摩点名称
+# def wds_name():
+#     BASE_DIR = os.path.dirname(__file__)
+#     file_path = os.path.join(BASE_DIR, 'setting.conf')
+#     cf = configparser.ConfigParser()
+#     # with open(file_path, 'r') as cfgfile:
+#     with open(file_path, 'r', encoding='utf-8') as cfgfile:
+#         cf.readfp(cfgfile)
+#         # modian
+#         modian_name = cf.get('modian', 'name')
+#         # modian_url = cf.get('modian', 'url')
+#         # pro_id = cf.get('modian', 'pro_id')
+#     return str(modian_name)
+# 
+# 
+# # 摩点网址 建议使用短网址
+# def wds_url():
+#     BASE_DIR = os.path.dirname(__file__)
+#     file_path = os.path.join(BASE_DIR, 'setting.conf')
+#     cf = configparser.ConfigParser()
+#     # with open(file_path, 'r') as cfgfile:
+#     with open(file_path, 'r', encoding='utf-8') as cfgfile:
+#         cf.readfp(cfgfile)
+#         # modian
+#         # modian_name = cf.get('modian', 'name')
+#         modian_url = cf.get('modian', 'url')
+#         # pro_id = cf.get('modian', 'pro_id')
+#     return str(modian_url)
 
 
 # 摩点项目对应pro_id
@@ -66,7 +66,8 @@ def pro_id():
         # modian_name = cf.get('modian', 'name')
         # modian_url = cf.get('modian', 'url')
         pro_id = cf.get('modian', 'pro_id')
-    return int(pro_id)
+        array = list(map(int, pro_id.split(',')))
+    return (array)
 
 
 # 摩点查询时间间隔读取
@@ -383,3 +384,13 @@ def proxy():
 
 
 # --------------------------------------------------------
+
+
+def get_short_url(long_url_str):
+    url = 'http://api.t.sina.com.cn/short_url/shorten.json?source=3271760578&url_long=' + str(long_url_str)
+    response = requests.get(
+        url,
+        verify=False
+        ).json()
+    # print(response)
+    return response[0]['url_short']

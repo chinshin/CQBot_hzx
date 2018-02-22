@@ -39,13 +39,14 @@ def getModian():
         # INFO(printStrTime() + 'check modian')
         INFO('check modian')
         stampTime = int(time.time())
-        msgDict = newOrder(stampTime, int(interval_md))
-        if msgDict:
-            for msg in msgDict['msg']:
-                msg += msgDict['end']
-                # print(printStrTime() + msg)
-                bot.send_group_msg_async(group_id=groupid(), message=msg, auto_escape=False)
-                time.sleep(0.1)
+        msgDict_array = newOrder(stampTime, int(interval_md))
+        for msgDict in msgDict_array:
+            if msgDict:
+                for msg in msgDict['msg']:
+                    msg += msgDict['end']
+                    # print(printStrTime() + msg)
+                    bot.send_group_msg_async(group_id=groupid(), message=msg, auto_escape=False)
+                    time.sleep(0.1)
     except Exception as e:
         WARN('error when getModian')
     finally:
