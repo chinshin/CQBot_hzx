@@ -104,15 +104,15 @@ def roomMsg():
                 # image
                 elif data['msgType'] == 1:
                     bodys = json.loads(data['bodys'])
-                    msg = ('【口袋48房间图片】\n %s：%s\n%s' % (extInfo['senderName'], bodys['url'], data['msgTimeStr']))
+                    msg = ('%s：图片消息：%s\n%s' % (extInfo['senderName'], bodys['url'], data['msgTimeStr']))
                 # voice
                 elif data['msgType'] == 2:
                     bodys = json.loads(data['bodys'])
-                    msg = ('【口袋48房间语音】\n %s：%s\n%s' % (extInfo['senderName'], bodys['url'], data['msgTimeStr']))
+                    msg = ('%s：语音消息：%s\n%s' % (extInfo['senderName'], bodys['url'], data['msgTimeStr']))
                 # video
                 elif data['msgType'] == 3:
                     bodys = json.loads(data['bodys'])
-                    msg = ('【口袋48房间视频】\n %s：%s\n%s' % (extInfo['senderName'], bodys['url'], data['msgTimeStr']))
+                    msg = ('%s：视频消息：%s\n%s' % (extInfo['senderName'], bodys['url'], data['msgTimeStr']))
                 else:
                     msg = '有未知类型的消息'
                     INFO('有未知类型的消息')

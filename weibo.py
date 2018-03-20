@@ -108,7 +108,7 @@ def get_5_idarray():
     weibo_id_array = []
     response = copy.copy(init())
     cards = response['data']['cards']
-    for i in range(0, 5):
+    for i in range(0, 11):
         datas = cards[i]
         try:
             weibo_id = datas['mblog']['id']

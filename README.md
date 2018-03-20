@@ -19,6 +19,13 @@
 
 ## 更新记录
 
+**2018.03.20更新：** 摩点改进（空订单的应对）
+
+1.修改了 `modian.py` ：增加了空订单判断，现在遇到空订单会最多重复查询5次，如果重试五次后依然返回空订单，则判断无人集资；
+
+2.修改了 `weibo.py`：将缓存的微博数目增加到10个。
+
+
 **2018.02.22更新：** 针对摩点查询做出改进（多项目查询）
 
 1.修改了`setting.conf`、`setting.py`、`modian.py`、`group.py`和`main.py`5个文件
@@ -54,6 +61,5 @@
 
 5. 修改酷Q文件夹下`app\io.github.richardchien.coolqhttpapi\`下配置文件，将`post_url`的值修改为`http://127.0.0.1:8080/`，具体端口与`group.py`中最后一行设置的`bot.run`端口相同；如果在第4步中设置了`access_token`和`secret`，则也要在配置文件中设置对应项；
 6. 修改`setting.conf`，填入相关信息；
-7. （可选）修改`main.py`中 Line 120 - 126 ，最后的int即为查询的时间间隔；如果有不需要的功能请注释；
-8. 在分别终端中运行`group.py`和`main.py`。
-9. 如果有其他需求或疑问，可以先查阅 [richardchien / CoolQ HTTP API](https://github.com/richardchien/coolq-http-api) 和 [richardchien / CQHttp Python SDK](https://github.com/richardchien/cqhttp-python-sdk) 的相关文档，或者提交[Issues](https://github.com/chinshin/CQBot_hzx/issues)给我；
+7. 在分别终端中运行`group.py`和`main.py`。
+8. 如果有其他需求或疑问，可以先查阅 [richardchien / CoolQ HTTP API](https://github.com/richardchien/coolq-http-api) 和 [richardchien / CQHttp Python SDK](https://github.com/richardchien/cqhttp-python-sdk) 的相关文档，或者提交[Issues](https://github.com/chinshin/CQBot_hzx/issues)给我；

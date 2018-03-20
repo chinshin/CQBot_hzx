@@ -154,6 +154,13 @@ def newOrder(stamp10, secondsDelay):
         # 查询失败则返回错误信息
         if int(orderDict['status']) == 2:
             return orderDict['message']
+        # 20180319,防止空订单，循环查询五次
+        retry = 0
+        while not len(orderDict['data']):
+            orderDict = getOrders(pro_id_dict['pro_id'], 1)
+            retry += 1
+            if retry > 5:
+                break
         # 查询成功，遍历data
         for data in orderDict['data']:
             pay_time = data['pay_time']
