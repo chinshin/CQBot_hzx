@@ -18,21 +18,36 @@ logger.addHandler(handler)  # 为logger添加handler
 logger.setLevel(logging.DEBUG)
 
 
-def INFO(text):
-    logger.info(str(text))
+def INFO(*texts):
+    msg = "\n"
+    for text in texts:
+        msg += str(text) + "\n"
+    logger.info(msg)
 
 
-def DEBUG(text):
-    logger.debug(str(text))
+def DEBUG(*texts):
+    msg = "\n"
+    for text in texts:
+        msg += str(text) + "\n"
+    logger.debug(msg)
 
 
-def WARN(text):
-    logger.warn(str(text))
+def WARN(*texts):
+    msg = "\n"
+    for text in texts:
+        msg += str(text) + "\n"
+    logger.warn(msg)
 
 
-def ERROR(text):
-    logger.error(str(text), exc_info=True)
+def ERROR(*texts):
+    msg = "\n"
+    for text in texts:
+        msg += str(text) + "\n"
+    logger.error(msg, exc_info=True)
 
 
-def CRITICAL(text):
-    logger.critical(str(text))
+def CRITICAL(*texts):
+    msg = "\n"
+    for text in texts:
+        msg += str(text) + "\n"
+    logger.critical(msg)

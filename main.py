@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from cqhttp import CQHttp
-import _thread
+# import _thread
 import time
 from modian import newOrder
 import copy
@@ -40,7 +40,7 @@ def getModian():
         INFO('check modian')
         stampTime = int(time.time())
         msgDict_array = newOrder(stampTime, int(interval_md))
-        for msgDict in msgDict_array:
+        for msgDict in msgDict_array[0:-1]:
             if msgDict:
                 for msg in msgDict['msg']:
                     msg += msgDict['end']
@@ -48,7 +48,7 @@ def getModian():
                     bot.send_group_msg_async(group_id=groupid(), message=msg, auto_escape=False)
                     time.sleep(0.1)
     except Exception as e:
-        WARN('error when getModian')
+        WARN('error when getModian', e, "modian dict:", msgDict_array[-1])
     finally:
         # INFO(printStrTime() + 'modian check completed')
         INFO('modian check completed')
@@ -90,7 +90,7 @@ def getWeibo():
                     # print(printStrTime() + wbcontent)
                     bot.send_group_msg_async(group_id=groupid(), message=wbcontent, auto_escape=False)
     except Exception as e:
-        WARN('error when getWeibo')
+        WARN('error when getWeibo', e)
     finally:
         # INFO(printStrTime() + 'weibo check completed')
         INFO('weibo check completed')
@@ -108,7 +108,7 @@ def getRoomMsg():
                 bot.send_group_msg_async(group_id=groupid(), message=msgdata, auto_escape=False)
     except Exception as e:
         # raise e
-        WARN('error when getRoomMsg')
+        WARN('error when getRoomMsg', e)
     else:
         pass
     finally:

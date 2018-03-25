@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 import setting
 import requests
-import json
+# import json
 # 消去https请求的不安全warning
 # import urllib3
 # urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 import urllib
 import hashlib
 import time
+from CQLog import INFO, WARN
 
 
 # -------------------------------
@@ -129,6 +130,7 @@ def rank(type):
             detail['data'][0]['goal']
         msg_array.append(msg)
     if err is True:
+        WARN("modian rank error", err_msg)
         return err_msg
     elif err is False:
         return msg_array
@@ -153,13 +155,16 @@ def newOrder(stamp10, secondsDelay):
         orderDict = getOrders(pro_id_dict['pro_id'], 1)
         # 查询失败则返回错误信息
         if int(orderDict['status']) == 2:
+            WARN("modian newOrder error", "获取订单错误", orderDict['message'])
             return orderDict['message']
         # 20180319,防止空订单，循环查询五次
         retry = 0
         while not len(orderDict['data']):
+            INFO("modian newOrder info", "疑似空订单")
             orderDict = getOrders(pro_id_dict['pro_id'], 1)
             retry += 1
             if retry > 5:
+                INFO("modian newOrder info", "订单5次为空，判断为无人集资")
                 break
         # 查询成功，遍历data
         for data in orderDict['data']:
@@ -176,6 +181,7 @@ def newOrder(stamp10, secondsDelay):
             detail = getDetail(pro_id_dict['pro_id'])
             # 查询失败则返回错误信息
             if int(detail['status']) == 2:
+                WARN("modian newOrder error", "获取项目信息错误", detail['message'])
                 return detail['message']
             # 查询成功，初始化消息
             msgDict['msg'] = []
@@ -190,4 +196,5 @@ def newOrder(stamp10, secondsDelay):
                 str(detail['data'][0]['already_raised']) + '\n目标：¥' +\
                 str(detail['data'][0]['goal'])
             msgDict_array.append(msgDict)
+    msgDict_array.append(orderDict)
     return msgDict_array

@@ -127,8 +127,7 @@ def roomMsg():
             WARN('token失效，尝试获取新token')
             setting.getNewToken()
     else:
-        WARN('获取口袋房间信息出错')
-        WARN(response['message'])
+        WARN('获取口袋房间信息出错', response['message'])
     return msg_array
     # if msg_array:
     #     msg_array.reverse()

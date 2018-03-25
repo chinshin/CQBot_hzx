@@ -3,6 +3,7 @@ import setting
 import requests
 import copy
 import re
+from CQLog import INFO, WARN
 
 
 # 除去字符串中的html标签
@@ -99,6 +100,7 @@ def getidarray():
             weibo_id_array.append("0")
         else:
             weibo_id_array.append(weibo_id)
+    INFO("weibo_id_array", weibo_id_array)
     return weibo_id_array
 
 
@@ -108,7 +110,7 @@ def get_5_idarray():
     weibo_id_array = []
     response = copy.copy(init())
     cards = response['data']['cards']
-    for i in range(0, 11):
+    for i in range(0, 4):
         datas = cards[i]
         try:
             weibo_id = datas['mblog']['id']
@@ -116,4 +118,5 @@ def get_5_idarray():
             weibo_id_array.append("0")
         else:
             weibo_id_array.append(weibo_id)
+    INFO("weibo_id_array_5", weibo_id_array)
     return weibo_id_array
