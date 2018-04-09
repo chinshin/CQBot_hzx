@@ -45,7 +45,8 @@ def getModian():
                 for msg in msgDict['msg']:
                     msg += msgDict['end']
                     # print(printStrTime() + msg)
-                    bot.send_group_msg_async(group_id=groupid(), message=msg, auto_escape=False)
+                    bot.send_group_msg_async(
+                        group_id=groupid(), message=msg, auto_escape=False)
                     time.sleep(0.1)
     except Exception as e:
         WARN('error when getModian', e, "modian dict:", msgDict_array[-1])
@@ -80,15 +81,19 @@ def getWeibo():
                     wbpic = checkpic(idcount)
                     wbscheme = getscheme(idcount)
                     if (retweet):
-                        wbcontent = "小偶像刚刚[转发]了一条微博：" + '\n' + '\n' + getretweetweibo(idcount) + '\n'
+                        wbcontent = "小偶像刚刚[转发]了一条微博：" + '\n' + '\n' \
+                            + getretweetweibo(idcount) + '\n'
                         wbcontent = wbcontent + '\n' + "传送门：" + wbscheme
                     else:
-                        wbcontent = "小偶像刚刚发了一条新微博：" + '\n' + '\n' + getweibo(idcount) + '\n'
+                        wbcontent = "小偶像刚刚发了一条新微博：" + '\n' + '\n' \
+                            + getweibo(idcount) + '\n'
                         if (wbpic):
                             wbcontent = wbcontent + getpic(idcount)
                         wbcontent = wbcontent + '\n' + "传送门：" + wbscheme
                     # print(printStrTime() + wbcontent)
-                    bot.send_group_msg_async(group_id=groupid(), message=wbcontent, auto_escape=False)
+                    bot.send_group_msg_async(
+                        group_id=groupid(), message=wbcontent,
+                        auto_escape=False)
     except Exception as e:
         WARN('error when getWeibo', e)
     finally:
@@ -105,7 +110,8 @@ def getRoomMsg():
             INFO('new room msg')
             msg_array.reverse()
             for msgdata in msg_array:
-                bot.send_group_msg_async(group_id=groupid(), message=msgdata, auto_escape=False)
+                bot.send_group_msg_async(
+                    group_id=groupid(), message=msgdata, auto_escape=False)
     except Exception as e:
         # raise e
         WARN('error when getRoomMsg', e)
@@ -117,10 +123,20 @@ def getRoomMsg():
 
 # 添加调度任务， 间隔为 0 则不添加
 if interval_md != 0:
-    sched.add_job(getModian, 'interval', seconds=interval_md)
+    # 20180409
+    # 增加misfire_grace_time参数：任务错过时间大于一个周期则放弃
+    # 增加coalesce参数：多个错过任务合并执行一次
+    # 增加max_instances参数：允许5个实例同时运行
+    sched.add_job(
+        getModian, 'interval', seconds=interval_md,
+        misfire_grace_time=interval_md, coalesce=True, max_instances=5)
 if interval_wb != 0:
-    sched.add_job(getWeibo, 'interval', seconds=interval_wb)
+    sched.add_job(
+        getWeibo, 'interval', seconds=interval_wb,
+        misfire_grace_time=interval_wb, coalesce=True, max_instances=5)
 if interval_kd != 0:
-    sched.add_job(getRoomMsg, 'interval', seconds=interval_kd)
+    sched.add_job(
+        getRoomMsg, 'interval', seconds=interval_kd,
+        misfire_grace_time=interval_kd, coalesce=True, max_instances=5)
 # 开始调度任务
 sched.start()
