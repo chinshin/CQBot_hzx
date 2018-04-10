@@ -383,7 +383,7 @@ def proxy():
     return proxies
 
 
-# --------------------------------------------------------
+# ---------------------长网址转短网址----------------------------
 
 
 def get_short_url(long_url_str):
@@ -394,3 +394,6 @@ def get_short_url(long_url_str):
         ).json()
     # print(response)
     return response[0]['url_short']
+
+
+# -------------------------------------------------------
