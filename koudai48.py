@@ -137,13 +137,13 @@ class Koudai:
                             extInfo['faipaiContent'], data['msgTimeStr']))
                     #
                 elif extInfo['messageObject'] == 'live':
-                    msg = ('小偶像开视频直播啦 \n 直播标题：%s \n 直播封面：https://source.48.\
-                        cn%s \n开始时间：%s \n 直播地址：https://h5.48.cn/2017appshare/memberLiveShare/index.html?id=%s' % (
+                    msg = ('小偶像开视频直播啦 \n直播标题：%s \n直播封面：https://source.48.\
+                        cn%s \n开始时间：%s \n直播地址：https://h5.48.cn/2017appshare/memberLiveShare/index.html?id=%s' % (
                         extInfo['referenceContent'],
                         extInfo['referencecoverImage'], data['msgTimeStr'],
                         extInfo['referenceObjectId']))
                 elif extInfo['messageObject'] == 'diantai':
-                    msg = ('小偶像开电台啦 \n 电台标题：%s \n 电台封面：https://source.48.cn%s \n开始时间：%s \n 电台地址：https://h5.48.cn/2017appshare/\
+                    msg = ('小偶像开电台啦 \n电台标题：%s \n电台封面：https://source.48.cn%s \n开始时间：%s \n电台地址：https://h5.48.cn/2017appshare/\
                         memberLiveShare/index.html?id=%s' % (
                         extInfo['referenceContent'],
                         extInfo['referencecoverImage'], data['msgTimeStr'],

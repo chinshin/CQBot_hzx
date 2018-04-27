@@ -280,7 +280,8 @@ def groupid():
     with open(file_path, 'r', encoding='utf-8') as cfgfile:
         cf.readfp(cfgfile)
         group_id = cf.get('QQqun', 'id')
-    return int(group_id)
+        array = list(map(int, group_id.split(',')))
+    return array
 
 
 # 欢迎信息

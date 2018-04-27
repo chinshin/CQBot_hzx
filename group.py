@@ -15,12 +15,12 @@ bot = CQHttp(api_root='http://127.0.0.1:5700/')
 # 群消息操作
 @bot.on_message('group')
 def handle_msg(context):
-    if context['group_id'] == setting.groupid() and context['user_id'] != context['self_id']:
+    if context['group_id'] in setting.groupid() and context['user_id'] != context['self_id']:
         # 关键词禁言
         if setting.shutup():
             for word in setting.shutup():
                 if word in context['message']:
-                    bot.set_group_ban(group_id=setting.groupid(), user_id=context['user_id'], duration=30*60)
+                    bot.set_group_ban(group_id=context['group_id'], user_id=context['user_id'], duration=30*60)
         # 关键词回复
         if context['message'] == '集资' or context['message'] == 'jz' or context['message'] == '打卡' or context['message'] == 'dk':
             jz = ''
@@ -56,7 +56,7 @@ def handle_msg(context):
 # 新人加群提醒
 @bot.on_event('group_increase')
 def handle_group_increase(context):
-    if context['group_id'] == setting.groupid():
+    if context['group_id'] == setting.groupid()[0]:
         # ret = bot.get_stranger_info(user_id=context['user_id'], no_cache=False)
         # welcome = '欢迎新聚聚：@' + ret['nickname'] + ' 加入本群\n\n' + setting.welcome()
         welcome = [{'type': 'text', 'data': {'text': '欢迎新聚聚：'}},

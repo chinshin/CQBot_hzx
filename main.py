@@ -44,9 +44,10 @@ def getModian():
                 for msg in msgDict['msg']:
                     msg += msgDict['end']
                     # print(printStrTime() + msg)
-                    bot.send_group_msg_async(
-                        group_id=groupid(), message=msg, auto_escape=False)
-                    time.sleep(0.1)
+                    for grpid in groupid():
+                        bot.send_group_msg_async(
+                            group_id=grpid, message=msg, auto_escape=False)
+                        time.sleep(0.1)
     except Exception as e:
         WARN('error when getModian', e, "modian dict:", msgDict_array[-1])
     finally:
@@ -113,10 +114,10 @@ def getWeibo():
                         {
                             'type': 'text',
                             'data': {'text': '传送门：%s' % weibo.getScheme(idcount)}})
-                    bot.send_group_msg_async(
-                        group_id=groupid(), message=msg,
-                        auto_escape=False)
-                    time.sleep(0.5)
+                    for grpid in groupid():
+                        bot.send_group_msg_async(
+                            group_id=grpid, message=msg, auto_escape=False)
+                            time.sleep(0.5)
                     # print(msg)
     except Exception as e:
         WARN('error when getWeibo', e)
@@ -137,9 +138,10 @@ def getRoomMsg():
             # 消息序列反向排序
             msgArray.reverse()
             for msg in msgArray:
-                bot.send_group_msg_async(
-                    group_id=groupid(), message=msg, auto_escape=False)
-                time.sleep(0.5)
+                for grpid in groupid():
+                    bot.send_group_msg_async(
+                        group_id=grpid, message=msg, auto_escape=False)
+                    time.sleep(0.5)
                 # print(msg)
     except Exception as e:
         # raise e

@@ -89,8 +89,8 @@ def md_init(proid_array):
         try:
             dict['url_short'] = setting.get_short_url(id_url)
         except Exception as e:
-            dict['url_short'] = 'https://zhongchou.modian.com/item/%d' % int(id)
-        dict['url_long'] = 'https://zhongchou.modian.com/item/%d' % int(id)
+            dict['url_short'] = 'https://m.modian.com/project/%d' % int(id)
+        dict['url_long'] = 'https://m.modian.com/project/%d' % int(id)
         detail = getDetail(id)
         dict['name'] = detail['data'][0]['pro_name']
         array.append(dict)
