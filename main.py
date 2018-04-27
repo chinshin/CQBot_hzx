@@ -117,7 +117,7 @@ def getWeibo():
                     for grpid in groupid():
                         bot.send_group_msg_async(
                             group_id=grpid, message=msg, auto_escape=False)
-                            time.sleep(0.5)
+                        time.sleep(0.5)
                     # print(msg)
     except Exception as e:
         WARN('error when getWeibo', e)
