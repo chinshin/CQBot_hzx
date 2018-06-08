@@ -153,6 +153,9 @@ class Koudai:
                     msg = ('%s：%s\n问题内容：%s\n%s' % (
                         extInfo['senderName'], extInfo['idolFlipTitle'],
                         extInfo['idolFlipContent'], data['msgTimeStr']))
+                # 自己发的消息
+                elif extInfo['messageObject'] == 'messageBoard':
+                    pass
                 else:
                     msg = '有未知格式的文字消息'
                     INFO('有未知格式的文字消息')
@@ -235,6 +238,9 @@ class Koudai:
                     msg = ('%s：%s\n问题内容：%s\n%s' % (
                         extInfo['senderName'], extInfo['idolFlipTitle'],
                         extInfo['idolFlipContent'], data['msgTimeStr']))
+                # 自己发的消息
+                elif extInfo['messageObject'] == 'messageBoard':
+                    pass
                 else:
                     msg = '有未知格式的文字消息'
                     INFO('有未知格式的文字消息')
