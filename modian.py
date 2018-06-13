@@ -184,11 +184,11 @@ def newOrder(stamp10, secondsDelay):
                 break
         # 查询成功，遍历data
         for data in orderDict['data']:
-            pay_time = data['pay_time']
+            pay_success_time = data['pay_success_time']
             # 将字符串时间转换为unix时间戳
-            data['pay_time'] = int(time.mktime(time.strptime(pay_time, '%Y-%m-%d %H:%M:%S')))
+            data['pay_success_time'] = int(time.mktime(time.strptime(pay_success_time, '%Y-%m-%d %H:%M:%S')))
             # 筛选订单时间在查询时间前的设定时间段之间的订单
-            if data['pay_time'] >= stamp10 - secondsDelay and data['pay_time'] < stamp10:
+            if data['pay_success_time'] >= stamp10 - secondsDelay and data['pay_success_time'] < stamp10:
                 newOrders.append(data)
         msgDict = {}
         # 有新订单
