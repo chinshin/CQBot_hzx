@@ -31,12 +31,28 @@ def getSign(ret):
 # page从1开始，每页最多20条数据
 
 
-# 项目订单查询 10285
+# 项目订单查询
 def getOrders(pro_id, page):
     url = 'https://wds.modian.com/api/project/orders'
     form = {
         'page': page,
         'pro_id': pro_id
+    }
+    sign = getSign(form)
+    form['sign'] = sign
+    response = requests.post(url, form, headers=header).json()
+    return response
+
+
+# 20180613API更新，增加自定义订单排序
+# sort_by = 1 按支付时间倒序
+# sort_by = 0 按下单时间倒序
+def sorted_orders(pro_id, page, sort_by=1):
+    url = 'https://wds.modian.com/api/project/sorted_orders'
+    form = {
+        'page': page,
+        'pro_id': pro_id,
+        'sort_by': sort_by
     }
     sign = getSign(form)
     form['sign'] = sign
@@ -63,7 +79,7 @@ def getRankings(pro_id, type, page):
 # 项目筹款结果查询
 # 查询多个项目用逗号分隔，如getDetail(10250,10280)
 def getDetail(*pro_id):
-    # 将形参（一个元组）中int元素转为str元素，用逗号拼接成字符串
+    # 将pro_id（一个元组）中int元素转为str元素，用逗号拼接成字符串
     pro_id_str = ','.join(map(str, pro_id))
     url = 'https://wds.modian.com/api/project/detail'
     form = {
@@ -152,7 +168,7 @@ def newOrder(stamp10, secondsDelay):
     for pro_id_dict in pro_id_array:
         newOrders = []
         # 获取一次订单信息，返回一个dictionary
-        orderDict = getOrders(pro_id_dict['pro_id'], 1)
+        orderDict = sorted_orders(pro_id_dict['pro_id'], 1)
         # 查询失败则返回错误信息
         if int(orderDict['status']) == 2:
             WARN("modian newOrder error", "获取订单错误", orderDict['message'])
@@ -161,7 +177,7 @@ def newOrder(stamp10, secondsDelay):
         retry = 0
         while not len(orderDict['data']):
             INFO("modian newOrder info", "疑似空订单")
-            orderDict = getOrders(pro_id_dict['pro_id'], 1)
+            orderDict = sorted_orders(pro_id_dict['pro_id'], 1)
             retry += 1
             if retry > 5:
                 INFO("modian newOrder info", "订单5次为空，判断为无人集资")

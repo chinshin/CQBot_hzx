@@ -277,4 +277,51 @@ class Koudai:
             msg_array.append(msg)
         return msg_array
 
+    # 2018总选额外功能，检查留言板投票
+    # 取前30条留言板消息，筛选出有投票的消息
+    def getboardpage(self):
+        cmts = []
+        url = 'https://pjuju.48.cn/imsystem/api/im/v1/member/room/message/boardpage'
+        header = {
+            'Host': 'pjuju.48.cn',
+            'version': '5.0.1',
+            'os': 'android',
+            'Accept-Encoding': 'gzip',
+            'IMEI': '866716037825810',
+            'User-Agent': 'Mobile_Pocket',
+            'Content-Length': '67',
+            'Connection': 'Keep-Alive',
+            'Content-Type': 'application/json;charset=utf-8',
+            'token': setting.token()
+        }
+        form = {
+            "lastTime": 0,
+            "limit": 30,
+            "isFirst": True,
+            "roomId": setting.roomId()
+        }
+        res = requests.post(
+            url,
+            data=json.dumps(form),
+            headers=header,
+            verify=False
+        ).json()
+        for data in res['content']['data']:
+            extInfo = json.loads(data['extInfo'])
+            if "giftId" in extInfo and "voteticket" in extInfo['giftId']:
+                cmts.append((extInfo['senderName'], extInfo['giftName'], data['msgTimeStr'], data['msgTime']))
+        return cmts
+
+    # 根据传入的时间间隔筛选投票消息，并包装str消息返回
+    def msg_ticket(self, interval_sec):
+        msgs = []
+        cmts = self.getboardpage()
+        if not cmts:
+            return False
+        for cmt in cmts:
+            if cmt[3] > self.sysTime13 - 1000.0*interval_sec:
+                msg = '%s：投了%s\n%s' % (cmt[0], cmt[1], cmt[2])
+        msgs.append(msg)
+        return msgs
+
 #
