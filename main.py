@@ -2,13 +2,14 @@
 from cqhttp import CQHttp
 # import _thread
 import time
-from modian import newOrder
 from weibo import Weibo
 from koudai48 import Koudai
 from setting import groupid, md_interval, kd_interval, wb_interval
 from CQLog import INFO, WARN
 # 引入时间调度器 apscheduler 的 BlockingScheduler
 from apscheduler.schedulers.blocking import BlockingScheduler
+# 引入抽卡
+from lottery import check_new, init_db
 
 
 # 与group.py设置一样
@@ -31,27 +32,20 @@ interval_kd = kd_interval()
 version_dict = bot.get_version_info()
 version = version_dict['coolq_edition']
 
+# 初始化数据库
+init_db()
+print('初始化db success')
+
 
 def getModian():
-    # bot = CQHttp(api_root='http://127.0.0.1:5700/')
     try:
-        # INFO(printStrTime() + 'check modian')
         INFO('check modian')
-        stampTime = int(time.time())
-        msgDict_array = newOrder(stampTime, int(interval_md))
-        for msgDict in msgDict_array[0:-1]:
-            if msgDict:
-                for msg in msgDict['msg']:
-                    msg += msgDict['end']
-                    # print(printStrTime() + msg)
-                    for grpid in groupid():
-                        bot.send_group_msg_async(
-                            group_id=grpid, message=msg, auto_escape=False)
-                        time.sleep(0.1)
+        msgs = check_new()
+        for msg in msgs:
+            print(msg)
     except Exception as e:
-        WARN('error when getModian', e, "modian dict:", msgDict_array[-1])
+        WARN('error when getModian', e)
     finally:
-        # INFO(printStrTime() + 'modian check completed')
         INFO('modian check completed')
 
 

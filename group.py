@@ -51,6 +51,49 @@ def handle_msg(context):
             for jd_msg in jd_array:
                 jd += jd_msg + '\n'
             bot.send(context, jd)
+        # 抽卡相关
+        from lottery import bind_qq, inquire
+        if context['message'] == '抽卡':
+            lot_reg = "卡池:包括普通卡N和稀有卡R、SR、UR\n" +\
+                "抽卡:包括单抽和连抽，集资10.7～106.99抽1次，金额越高越容易出稀有卡(不含ur)；" +\
+                "107及以上11连抽，保底1张sr，连抽稀有卡(含ur)更容易出现喔\n" +\
+                "卡池共有N卡n张，R卡r张，SR卡sr张，UR卡ur张。抽满奖励bonus\n" +\
+                "【抽卡链接】:\n"
+            ck_array = modian.md_init(setting.pro_id())
+            for ck_dict in ck_array:
+                lot_reg += ck_dict['name'] + '\n' + ck_dict['url_short'] + '\n'
+            bot.send(context, lot_reg)
+        if context['message'] == '查卡':
+            chaka = inquire(context['user_id'])
+            if chaka:
+                bot.send(context, chaka)
+            else:
+                inq_reg = "请指定摩点id或先进行绑定操作\n" + "查询命令格式“查卡#123456”" +\
+                    "绑卡命令可将您的qq和摩点数字id绑定，数字id可以通过摩点app或直接集资查询。\n" +\
+                    "命令格式为“绑定#123456”"
+                bot.send(context, inq_reg)
+        if context['message'].startswith('查卡#'):
+            try:
+                chaka_uid = int(context['message'].split("#")[1])
+            except Exception as e:
+                print(e)
+                bot.send(context, "查询失败")
+            else:
+                chaka_result = inquire(context['user_id'], chaka_uid)
+                if chaka_result:
+                    bot.send(context, chaka_result)
+                else:
+                    bot.send(context, "查询失败")
+        if context['message'].startswith('绑卡#'):
+            try:
+                bangka_uid = int(context['message'].split("#")[1])
+            except Exception as e:
+                bot.send(context, "绑定失败")
+            else:
+                if bind_qq(context['user_id'], bangka_uid):
+                    bot.send(context, "绑定成功")
+                else:
+                    bot.send(context, "绑定失败")
 
 
 # 新人加群提醒
