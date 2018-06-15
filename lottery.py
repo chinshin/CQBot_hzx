@@ -329,7 +329,7 @@ def check_new():
                 ]
             else:
                 msg_lot = [{'type': 'text', 'data': {
-                    'text': "满额有抽卡喔，聚聚不来试一下？回复“抽卡”了解详情"}}]
+                    'text': "\n满额有抽卡喔，聚聚不来试一下？回复“抽卡”了解详情"}}]
             # 播报至酷q
             msg = msg_md + msg_lot
             msg_list.append(msg)
