@@ -209,7 +209,7 @@ def pick(float_money):
                     # 抽1张ur
                     result.append(choose_card(3))
     # elif float_money >= 10.7:
-    elif float_money >= 10:
+    elif float_money >= 10.7:
         # 稀有概率为5.5% ~ 17%，以10.6的整数倍为阶梯增加
         seed1 = int(random.normalvariate(50, 16))
         if (seed1 >= 82-float_money/10.6) or (seed1 <= 18+float_money/10.6):
