@@ -10,7 +10,6 @@
 
 本项目代码逻辑由基于qqbot（webqq）的 [chinshin/qqbot_hzx](https://github.com/chinshin/qqbot_hzx) 移植而来，并作少许修改。
 
-**更多功能，可以试试我的网站  [RealFairy.cn/idol](https://RealFairy.cn/idol)**
 
 ------
 
@@ -18,6 +17,10 @@
 
 
 ## 更新记录
+
+**2018.06.15更新：抽卡分枝上线** 增加了branch-lottery
+
+具体访问[抽卡分枝](https://github.com/chinshin/CQBot_hzx/tree/branch-lottery)
 
 **2018.06.14更新：** 摩点API增加 + 口袋房间投票消息播报（暂时性增加，总选后移除）
 
