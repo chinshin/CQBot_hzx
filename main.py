@@ -42,7 +42,10 @@ def getModian():
         INFO('check modian')
         msgs = check_new()
         for msg in msgs:
-            print(msg)
+            for grpid in groupid():
+                bot.send_group_msg_async(
+                    group_id=grpid, message=msg, auto_escape=False)
+                time.sleep(0.5)
     except Exception as e:
         WARN('error when getModian', e)
     finally:

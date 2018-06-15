@@ -325,7 +325,7 @@ def check_new():
                 msg_lot = [{'type': 'text', 'data': {
                     'text': '本次抽卡结果:%s' % ','.join(card_results)}},
                     {'type': 'image', 'data': {
-                        'file': os.path.dirname(__file__)+'/cardpool/%s/%s.jpg' % (card_results[0].split()[0], card_results[0])}}
+                        'file': 'file://' + os.path.dirname(__file__)+'\\cardpool\\%s\\%s.jpg' % (card_results[0].split()[0], card_results[0])}}
                 ]
             else:
                 msg_lot = [{'type': 'text', 'data': {
