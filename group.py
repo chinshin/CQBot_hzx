@@ -69,7 +69,7 @@ def handle_msg(context):
                 bot.send(context, chaka)
             else:
                 inq_reg = "请指定摩点id或先进行绑定操作\n" + "查询命令格式“查卡#123456”" +\
-                    "绑卡命令可将您的qq和摩点数字id绑定，数字id可以通过摩点app或直接集资查询。\n" +\
+                    "\n绑卡命令可将您的qq和摩点数字id绑定，数字id可以通过摩点app或直接集资查询。\n" +\
                     "命令格式为“绑定#123456”"
                 bot.send(context, inq_reg)
         if context['message'].startswith('查卡#'):
@@ -84,7 +84,7 @@ def handle_msg(context):
                     bot.send(context, chaka_result)
                 else:
                     bot.send(context, "查询失败")
-        if context['message'].startswith('绑卡#'):
+        if context['message'].startswith('绑定#'):
             try:
                 bangka_uid = int(context['message'].split("#")[1])
             except Exception as e:

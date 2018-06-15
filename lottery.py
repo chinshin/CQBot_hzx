@@ -323,7 +323,7 @@ def check_new():
                 # 排列ur-sr-r-n
                 card_results.sort(reverse=True)
                 msg_lot = [{'type': 'text', 'data': {
-                    'text': '本次抽卡结果:%s' % ','.join(card_results)}},
+                    'text': '\n本次抽卡结果:%s' % ','.join(card_results)}},
                     {'type': 'image', 'data': {
                         'file': 'file://' + os.path.dirname(__file__)+'\\cardpool\\%s\\%s.jpg' % (card_results[0].split()[0], card_results[0])}}
                 ]
