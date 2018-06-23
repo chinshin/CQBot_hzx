@@ -137,8 +137,7 @@ class Koudai:
                             extInfo['faipaiContent'], data['msgTimeStr']))
                     #
                 elif extInfo['messageObject'] == 'live':
-                    msg = ('小偶像开视频直播啦 \n直播标题：%s \n直播封面：https://source.48.\
-                        cn%s \n开始时间：%s \n直播地址：https://h5.48.cn/2017appshare/memberLiveShare/index.html?id=%s' % (
+                    msg = ('小偶像开视频直播啦 \n直播标题：%s \n直播封面：https://source.48.cn%s \n开始时间：%s \n直播地址：https://h5.48.cn/2017appshare/memberLiveShare/index.html?id=%s' % (
                         extInfo['referenceContent'],
                         extInfo['referencecoverImage'], data['msgTimeStr'],
                         extInfo['referenceObjectId']))
@@ -218,18 +217,17 @@ class Koudai:
                         {'type': 'image', 'data': {
                             'file': 'https://source.48.cn%s' % extInfo['referencecoverImage']}},
                         {'type': 'text', 'data': {
-                            'text': '\n开始时间：%s \n 直播地址：https://h5.48.cn/2017appshare/memberLiveShare/index.html?id=%s' % (
+                            'text': '开始时间：%s \n 直播地址：https://h5.48.cn/2017appshare/memberLiveShare/index.html?id=%s' % (
                                 data['msgTimeStr'],
                                 extInfo['referenceObjectId'])}}
                     ]
                 elif extInfo['messageObject'] == 'diantai':
                     msg = [{'type': 'text', 'data': {
-                        'text': '小偶像开电台啦 \n 电台标题：%s \n \
-                        电台封面：' % extInfo['referenceContent']}},
+                        'text': '小偶像开电台啦 \n 电台标题：%s \n 电台封面：' % extInfo['referenceContent']}},
                         {'type': 'image', 'data': {
                             'file': 'https://source.48.cn%s' % extInfo['referencecoverImage']}},
                         {'type': 'text', 'data': {
-                            'text': '\n开始时间：%s \n 电台地址：https://h5.48.cn/2017appshare/memberLiveShare/index.html?id=%s' % (
+                            'text': '开始时间：%s \n 电台地址：https://h5.48.cn/2017appshare/memberLiveShare/index.html?id=%s' % (
                                 data['msgTimeStr'],
                                 extInfo['referenceObjectId'])}}
                     ]
@@ -253,7 +251,7 @@ class Koudai:
                     {'type': 'image', 'data': {
                         'file': '%s' % bodys['url']}},
                     {'type': 'text', 'data': {
-                        'text': '\n%s' % data['msgTimeStr']}}
+                        'text': '%s' % data['msgTimeStr']}}
                 ]
             # voice
             elif data['msgType'] == 2:
