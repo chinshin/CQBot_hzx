@@ -131,10 +131,21 @@ class Koudai:
                             extInfo['senderName'], extInfo['messageText'],
                             extInfo['faipaiName'], extInfo['faipaiContent'],
                             data['msgTimeStr']))
-                    except Exception as e:
-                        msg = ('%s：%s\n翻牌：%s\n%s' % (
-                            extInfo['senderName'], extInfo['messageText'],
-                            extInfo['faipaiContent'], data['msgTimeStr']))
+                    except Exception:
+                        # msg = ('%s：%s\n翻牌：%s\n%s' % (
+                        #     extInfo['senderName'], extInfo['messageText'],
+                        #     extInfo['faipaiContent'], data['msgTimeStr']))
+                        # 20180712更新，增加聚聚id查询nickname
+                        juju_nickname = self.showfpname(extInfo["faipaiUserId"])
+                        if juju_nickname:
+                            msg = ('%s：%s\n%s：%s\n%s' % (
+                                extInfo['senderName'], extInfo['messageText'],
+                                juju_nickname, extInfo['faipaiContent'],
+                                data['msgTimeStr']))
+                        else:
+                            msg = ('%s：%s\n翻牌：%s\n%s' % (
+                                extInfo['senderName'], extInfo['messageText'],
+                                extInfo['faipaiContent'], data['msgTimeStr']))
                     #
                 elif extInfo['messageObject'] == 'live':
                     msg = ('小偶像开视频直播啦 \n直播标题：%s \n直播封面：https://source.48.cn%s \n开始时间：%s \n直播地址：https://h5.48.cn/2017appshare/memberLiveShare/index.html?id=%s' % (
@@ -205,10 +216,21 @@ class Koudai:
                             extInfo['senderName'], extInfo['messageText'],
                             extInfo['faipaiName'], extInfo['faipaiContent'],
                             data['msgTimeStr']))
-                    except Exception as e:
-                        msg = ('%s：%s\n翻牌：%s\n%s' % (
-                            extInfo['senderName'], extInfo['messageText'],
-                            extInfo['faipaiContent'], data['msgTimeStr']))
+                    except Exception:
+                        # msg = ('%s：%s\n翻牌：%s\n%s' % (
+                        #     extInfo['senderName'], extInfo['messageText'],
+                        #     extInfo['faipaiContent'], data['msgTimeStr']))
+                        # 20180712更新，增加聚聚id查询nickname
+                        juju_nickname = self.showfpname(extInfo["faipaiUserId"])
+                        if juju_nickname:
+                            msg = ('%s：%s\n%s：%s\n%s' % (
+                                extInfo['senderName'], extInfo['messageText'],
+                                juju_nickname, extInfo['faipaiContent'],
+                                data['msgTimeStr']))
+                        else:
+                            msg = ('%s：%s\n翻牌：%s\n%s' % (
+                                extInfo['senderName'], extInfo['messageText'],
+                                extInfo['faipaiContent'], data['msgTimeStr']))
                     #
                 elif extInfo['messageObject'] == 'live':
                     msg = [{'type': 'text', 'data': {
@@ -321,5 +343,23 @@ class Koudai:
                 msg = '%s：投了%s\n%s' % (cmt[0], cmt[1], cmt[2])
         msgs.append(msg)
         return msgs
+
+    # 感谢flydsc的分享，现在可以通过鸡腿充值查询接口来查询口袋id对应的nickname
+    def showfpname(self, jjid):
+        url = 'http://zhibo.ckg48.com/Recharge/ajax_post_checkinfo'
+        form = {
+            "pocket_id": int(jjid),
+        }
+        r = requests.post(
+            url,
+            data=form,
+            verify=False
+        )
+        try:
+            r = r.json()
+            jjname = r['nickName']
+            return jjname
+        except Exception:
+            return False
 
 #
