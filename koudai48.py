@@ -321,7 +321,7 @@ class Koudai:
         for cmt in cmts:
             if cmt[3] > self.sysTime13 - 1000.0*interval_sec:
                 msg = '%s：投了%s\n%s' % (cmt[0], cmt[1], cmt[2])
-        msgs.append(msg)
+            msgs.append(msg)
         return msgs
 
 #
