@@ -62,13 +62,18 @@ class Koudai:
             "chatType": 0,
             "roomId": setting.roomId()
         }
-        res = requests.post(
-            url,
-            data=json.dumps(form),
-            headers=header,
-            verify=False
-        ).json()
-        return res
+        try:
+            res = requests.post(
+                url,
+                data=json.dumps(form),
+                headers=header,
+                verify=False,
+                timeout=5
+            ).json()
+            return res
+        except Exception as identifier:
+            WARN('getMainpage error', identifier)
+            raise identifier
 
     def getSysTime13(self):
         t = int(time.time() * 1000)
@@ -320,17 +325,22 @@ class Koudai:
             "isFirst": True,
             "roomId": setting.roomId()
         }
-        res = requests.post(
-            url,
-            data=json.dumps(form),
-            headers=header,
-            verify=False
-        ).json()
-        for data in res['content']['data']:
-            extInfo = json.loads(data['extInfo'])
-            if "giftId" in extInfo and "voteticket" in extInfo['giftId']:
-                cmts.append((extInfo['senderName'], extInfo['giftName'], data['msgTimeStr'], data['msgTime']))
-        return cmts
+        try:
+            res = requests.post(
+                url,
+                data=json.dumps(form),
+                headers=header,
+                verify=False,
+                timeout=5
+            ).json()
+            for data in res['content']['data']:
+                extInfo = json.loads(data['extInfo'])
+                if "giftId" in extInfo and "voteticket" in extInfo['giftId']:
+                    cmts.append((extInfo['senderName'], extInfo['giftName'], data['msgTimeStr'], data['msgTime']))
+            return cmts
+        except Exception as identifier:
+            WARN("getboardpage error", identifier)
+            return []
 
     # 根据传入的时间间隔筛选投票消息，并包装str消息返回
     def msg_ticket(self, interval_sec):
@@ -350,12 +360,13 @@ class Koudai:
         form = {
             "pocket_id": int(jjid),
         }
-        r = requests.post(
-            url,
-            data=form,
-            verify=False
-        )
         try:
+            r = requests.post(
+                url,
+                data=form,
+                verify=False,
+                timeout=5
+            )
             r = r.json()
             jjname = r['nickName']
             return jjname

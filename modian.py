@@ -40,7 +40,7 @@ def getOrders(pro_id, page):
     }
     sign = getSign(form)
     form['sign'] = sign
-    response = requests.post(url, form, headers=header).json()
+    response = requests.post(url, form, headers=header, timeout=5).json()
     return response
 
 
@@ -56,7 +56,7 @@ def sorted_orders(pro_id, page, sort_by=1):
     }
     sign = getSign(form)
     form['sign'] = sign
-    response = requests.post(url, form, headers=header).json()
+    response = requests.post(url, form, headers=header, timeout=5).json()
     return response
 
 
@@ -72,7 +72,7 @@ def getRankings(pro_id, type, page):
     }
     sign = getSign(form)
     form['sign'] = sign
-    response = requests.post(url, form, headers=header).json()
+    response = requests.post(url, form, headers=header, timeout=5).json()
     return response
 
 
@@ -87,7 +87,7 @@ def getDetail(*pro_id):
     }
     sign = getSign(form)
     form['sign'] = sign
-    response = requests.post(url, form, headers=header).json()
+    response = requests.post(url, form, headers=header, timeout=5).json()
     return response
 
 
