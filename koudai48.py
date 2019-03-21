@@ -356,7 +356,9 @@ class Koudai:
 
     # 感谢flydsc的分享，现在可以通过鸡腿充值查询接口来查询口袋id对应的nickname
     def showfpname(self, jjid):
-        url = 'http://zhibo.ckg48.com/Recharge/ajax_post_checkinfo'
+        # url = 'http://zhibo.ckg48.com/Recharge/ajax_post_checkinfo'
+        # 感谢Shichao, ckg48整体下线，接口更新
+        url = 'https://live.48.cn/Recharge/ajax_post_checkinfo'
         form = {
             "pocket_id": int(jjid),
         }

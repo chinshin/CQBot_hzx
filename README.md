@@ -20,11 +20,13 @@
 
 ## 更新记录
 
-**2018.11.11更新：** 祝大家节日快乐。给所有的request请求增加了timeout=5，防止请求pending导致的apscheduler instances limit堵塞任务。
+**2019.03.21更新：** 感谢Shichao, ckg48整体下线, 接口更新.
+
+**2018.11.11更新：** 祝大家节日快乐。给所有的request请求增加了timeout=5，防止请求pending导致的apscheduler instances limit堵塞任务。
 
 **2018.07.12更新：** 增加了对翻牌消息中聚聚id的识别
 
-现在查询不到翻牌name后，会通过新接口查询口袋id对应的nickName显示到翻牌消息中。在此 **特别感谢[flydsc](https://github.com/flydsc)** 的接口分享。
+现在查询不到翻牌name后，会通过新接口查询口袋id对应的nickName显示到翻牌消息中。在此 **特别感谢[flydsc](https://github.com/flydsc)** 的接口分享。
 
 **2018.06.15更新：抽卡分枝上线** 增加了branch-lottery
 
