@@ -20,6 +20,14 @@
 
 ## 更新记录
 
+***2019.04.16更新：*** **口袋48改版**。
+
+修改了`koudai48.py`、`main.py`、`setting.py`、`setting.conf`，使用了新接口，感谢t\*\*z、b\*\*、z\*、y\*\*等等的share。
+
+本版本仅经过简单测试，后果自负。
+
+现在需要在`setting.conf`中加入roomId和ownerId。
+
 **2019.03.21更新：** 感谢Shichao, ckg48整体下线, 接口更新.
 
 **2018.11.11更新：** 祝大家节日快乐。给所有的request请求增加了timeout=5，防止请求pending导致的apscheduler instances limit堵塞任务。
