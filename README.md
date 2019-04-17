@@ -28,6 +28,8 @@
 
 现在需要在`setting.conf`中加入roomId和ownerId。
 
+可以使用`searchMember.py`查询，用法见该文件头部说明。
+
 **2019.03.21更新：** 感谢Shichao, ckg48整体下线, 接口更新.
 
 **2018.11.11更新：** 祝大家节日快乐。给所有的request请求增加了timeout=5，防止请求pending导致的apscheduler instances limit堵塞任务。
