@@ -174,11 +174,9 @@ def token_verify():
         # user = cf.get('koudai48', 'user')
         # password = cf.get('koudai48', 'password')
         token = cf.get('koudai48', 'token')
-
-    url = 'https://pocketapi.48.cn/im/api/v1/chatroom/msg/list/homeowner'
+    url = 'https://pocketapi.48.cn/user/api/v1/user/info/home'
     form = {
-        'ownerId': 63558,
-        'roomId': 67313743
+        "userId": 1
     }
     header = {
         'Host': 'pocketapi.48.cn',

@@ -139,10 +139,10 @@ class Koudai:
                     playStreamPath, playDetail = self.getlivedetail(extInfo['liveId'])
                     if not playStreamPath:
                         playStreamPath = "暂无"
-                    msg = ('小偶像开直播啦 \n直播标题：%s \n直播封面：https://source.48.cn%s \n开始时间：%s \nplayStreamPath：%s' % (
+                    msg = ('小偶像开直播啦 \n直播标题：%s \n直播封面：https://source.48.cn%s \n直播地址：https://h5.48.cn/2019appshare/memberLiveShare/index.html?id=%s \n推流地址：%s\n%s' % (
                         extInfo['liveTitle'],
-                        extInfo['liveCover'], self.stamp_to_str(data['msgTime']),
-                        playStreamPath))
+                        extInfo['liveCover'], extInfo['liveId'],
+                        playStreamPath, self.stamp_to_str(data['msgTime'])))
                 # elif extInfo['messageObject'] == 'diantai':
                 #     msg = ('小偶像开电台啦 \n电台标题：%s \n电台封面：https://source.48.cn%s \n开始时间：%s \n电台地址：https://h5.48.cn/2017appshare/\
                 #         memberLiveShare/index.html?id=%s' % (
@@ -204,14 +204,15 @@ class Koudai:
                     if not playStreamPath:
                         playStreamPath = "暂无"
                     msg = [{'type': 'text', 'data': {
-                        'text': '小偶像开视频直播啦 \n 直播标题：%s \n \
+                        'text': '小偶像开直播啦 \n 直播标题：%s \n \
                         直播封面：' % extInfo['liveTitle']}},
                         {'type': 'image', 'data': {
                             'file': 'https://source.48.cn%s' % extInfo['liveCover']}},
                         {'type': 'text', 'data': {
-                            'text': '开始时间：%s \n playStreamPath：%s' % (
-                                self.stamp_to_str(data['msgTime']),
-                                playStreamPath)}}
+                            'text': '直播地址https://h5.48.cn/2019appshare/memberLiveShare/index.html?id=%s \n推流地址：%s开始时间：%s' % (
+                                extInfo['liveId'],
+                                playStreamPath,
+                                self.stamp_to_str(data['msgTime']))}}
                     ]
                 elif extInfo['messageType'] == 'FLIPCARD':
                     # INFO('idol翻牌')
