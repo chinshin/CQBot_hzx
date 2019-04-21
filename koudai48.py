@@ -37,7 +37,8 @@ class Koudai:
             WARN('koudai48.py授权验证失败', res)
             if not setting.token_verify():
                 WARN('token失效，尝试获取新token')
-                setting.getNewToken()
+                refresh_token = setting.getNewToken()
+                INFO("get new token ->", refresh_token)
         else:
             WARN('获取口袋房间信息出错', res['message'])
 
@@ -139,16 +140,23 @@ class Koudai:
                     playStreamPath, playDetail = self.getlivedetail(extInfo['liveId'])
                     if not playStreamPath:
                         playStreamPath = "暂无"
-                    msg = ('小偶像开直播啦 \n直播标题：%s \n直播封面：https://source.48.cn%s \n直播地址：https://h5.48.cn/2019appshare/memberLiveShare/index.html?id=%s \n推流地址：%s\n%s' % (
-                        extInfo['liveTitle'],
-                        extInfo['liveCover'], extInfo['liveId'],
-                        playStreamPath, self.stamp_to_str(data['msgTime'])))
-                # elif extInfo['messageObject'] == 'diantai':
-                #     msg = ('小偶像开电台啦 \n电台标题：%s \n电台封面：https://source.48.cn%s \n开始时间：%s \n电台地址：https://h5.48.cn/2017appshare/\
-                #         memberLiveShare/index.html?id=%s' % (
-                #         extInfo['referenceContent'],
-                #         extInfo['referencecoverImage'], data['msgTimeStr'],
-                #         extInfo['referenceObjectId']))
+                    if playDetail['content']['type'] == 1:
+                        msg = ('小偶像开直播啦 \n直播标题：%s \n直播封面：https://source.48.cn%s \n直播地址：https://h5.48.cn/2019appshare/memberLiveShare/index.html?id=%s \n推流地址：%s\n%s' % (
+                            extInfo['liveTitle'],
+                            extInfo['liveCover'], extInfo['liveId'],
+                            playStreamPath, self.stamp_to_str(data['msgTime'])))
+                    elif playDetail['content']['type'] == 2:
+                        msg = ('小偶像开电台啦 \n直播标题：%s \n电台封面：https://source.48.cn%s \n电台地址：https://h5.48.cn/2019appshare/memberLiveShare/index.html?id=%s \n推流地址：%s\n%s' % (
+                            extInfo['liveTitle'],
+                            extInfo['liveCover'], extInfo['liveId'],
+                            playStreamPath, self.stamp_to_str(data['msgTime'])))
+                    else:
+                        msg = '有未知格式的直播消息'
+                        INFO('有未知格式的直播消息')
+                elif extInfo['messageType'] == 'VOTE':
+                    msg = ('%s：发起了投票：\n%s\n%s' % (
+                        extInfo['user']['nickName'], extInfo['text'],
+                        self.stamp_to_str(data['msgTime'])))
                 elif extInfo['messageType'] == 'FLIPCARD':
                     # INFO('idol翻牌')
                     msg = ('%s：%s\n问题内容：%s\n%s' % (
@@ -164,6 +172,11 @@ class Koudai:
                 msg = ('%s：图片消息：%s\n%s' % (
                     extInfo['user']['nickName'], bodys['url'], self.stamp_to_str(data['msgTime'])))
             # voice
+            elif data['msgType'] == 'VIDEO':
+                bodys = json.loads(data['bodys'])
+                msg = ('%s：视频消息：%s\n%s' % (
+                    extInfo['user']['nickName'], bodys['url'], self.stamp_to_str(data['msgTime'])))
+            # video
             elif data['msgType'] == 'AUDIO':
                 bodys = json.loads(data['bodys'])
                 msg = ('%s：语音消息：%s\n%s' % (
@@ -203,17 +216,37 @@ class Koudai:
                     playStreamPath, playDetail = self.getlivedetail(extInfo['liveId'])
                     if not playStreamPath:
                         playStreamPath = "暂无"
-                    msg = [{'type': 'text', 'data': {
-                        'text': '小偶像开直播啦 \n 直播标题：%s \n \
-                        直播封面：' % extInfo['liveTitle']}},
-                        {'type': 'image', 'data': {
-                            'file': 'https://source.48.cn%s' % extInfo['liveCover']}},
-                        {'type': 'text', 'data': {
-                            'text': '直播地址https://h5.48.cn/2019appshare/memberLiveShare/index.html?id=%s \n推流地址：%s开始时间：%s' % (
-                                extInfo['liveId'],
-                                playStreamPath,
-                                self.stamp_to_str(data['msgTime']))}}
-                    ]
+                    if playDetail['content']['type'] == 1:
+                        msg = [{'type': 'text', 'data': {
+                            'text': '小偶像开直播啦 \n 直播标题：%s \n \
+                            直播封面：' % extInfo['liveTitle']}},
+                            {'type': 'image', 'data': {
+                                'file': 'https://source.48.cn%s' % extInfo['liveCover']}},
+                            {'type': 'text', 'data': {
+                                'text': '直播地址https://h5.48.cn/2019appshare/memberLiveShare/index.html?id=%s \n推流地址：%s开始时间：%s' % (
+                                    extInfo['liveId'],
+                                    playStreamPath,
+                                    self.stamp_to_str(data['msgTime']))}}
+                        ]
+                    elif playDetail['content']['type'] == 2:
+                        msg = [{'type': 'text', 'data': {
+                            'text': '小偶像开电台啦 \n 电台标题：%s \n \
+                            电台封面：' % extInfo['liveTitle']}},
+                            {'type': 'image', 'data': {
+                                'file': 'https://source.48.cn%s' % extInfo['liveCover']}},
+                            {'type': 'text', 'data': {
+                                'text': '电台地址https://h5.48.cn/2019appshare/memberLiveShare/index.html?id=%s \n推流地址：%s开始时间：%s' % (
+                                    extInfo['liveId'],
+                                    playStreamPath,
+                                    self.stamp_to_str(data['msgTime']))}}
+                        ]
+                    else:
+                        msg = '有未知格式的直播消息'
+                        INFO('有未知格式的直播消息')
+                elif extInfo['messageType'] == 'VOTE':
+                    msg = ('%s：发起了投票：\n%s\n%s' % (
+                        extInfo['user']['nickName'], extInfo['text'],
+                        self.stamp_to_str(data['msgTime'])))
                 elif extInfo['messageType'] == 'FLIPCARD':
                     # INFO('idol翻牌')
                     msg = ('%s：%s\n问题内容：%s\n%s' % (
@@ -238,6 +271,16 @@ class Koudai:
                 bodys = json.loads(data['bodys'])
                 msg = [{'type': 'text', 'data': {
                     'text': '%s：语音消息' % extInfo['user']['nickName']}},
+                    {'type': 'record', 'data': {
+                        'file': '%s' % bodys['url']}},
+                    {'type': 'text', 'data': {
+                        'text': '\n%s' % self.stamp_to_str(data['msgTime'])}}
+                ]
+            # video
+            elif data['msgType'] == 'VIDEO':
+                bodys = json.loads(data['bodys'])
+                msg = [{'type': 'text', 'data': {
+                    'text': '%s：视频消息' % extInfo['user']['nickName']}},
                     {'type': 'record', 'data': {
                         'file': '%s' % bodys['url']}},
                     {'type': 'text', 'data': {
