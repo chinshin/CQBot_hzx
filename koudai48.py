@@ -72,7 +72,7 @@ class Koudai:
                 data=json.dumps(form),
                 headers=header,
                 verify=False,
-                timeout=5).json()
+                timeout=15).json()
             return response
         except Exception as e:
             raise e
@@ -146,7 +146,7 @@ class Koudai:
                             extInfo['liveCover'], extInfo['liveId'],
                             playStreamPath, self.stamp_to_str(data['msgTime'])))
                     elif playDetail['content']['type'] == 2:
-                        msg = ('小偶像开电台啦 \n直播标题：%s \n电台封面：https://source.48.cn%s \n电台地址：https://h5.48.cn/2019appshare/memberLiveShare/index.html?id=%s \n推流地址：%s\n%s' % (
+                        msg = ('小偶像开电台啦 \n电台标题：%s \n电台封面：https://source.48.cn%s \n电台地址：https://h5.48.cn/2019appshare/memberLiveShare/index.html?id=%s \n推流地址：%s\n%s' % (
                             extInfo['liveTitle'],
                             extInfo['liveCover'], extInfo['liveId'],
                             playStreamPath, self.stamp_to_str(data['msgTime'])))
@@ -218,8 +218,7 @@ class Koudai:
                         playStreamPath = "暂无"
                     if playDetail['content']['type'] == 1:
                         msg = [{'type': 'text', 'data': {
-                            'text': '小偶像开直播啦 \n 直播标题：%s \n \
-                            直播封面：' % extInfo['liveTitle']}},
+                            'text': '小偶像开直播啦 \n 直播标题：%s \n直播封面：' % extInfo['liveTitle']}},
                             {'type': 'image', 'data': {
                                 'file': 'https://source.48.cn%s' % extInfo['liveCover']}},
                             {'type': 'text', 'data': {
@@ -230,8 +229,7 @@ class Koudai:
                         ]
                     elif playDetail['content']['type'] == 2:
                         msg = [{'type': 'text', 'data': {
-                            'text': '小偶像开电台啦 \n 电台标题：%s \n \
-                            电台封面：' % extInfo['liveTitle']}},
+                            'text': '小偶像开电台啦 \n 电台标题：%s \n电台封面：' % extInfo['liveTitle']}},
                             {'type': 'image', 'data': {
                                 'file': 'https://source.48.cn%s' % extInfo['liveCover']}},
                             {'type': 'text', 'data': {
@@ -281,8 +279,8 @@ class Koudai:
                 bodys = json.loads(data['bodys'])
                 msg = [{'type': 'text', 'data': {
                     'text': '%s：视频消息' % extInfo['user']['nickName']}},
-                    {'type': 'record', 'data': {
-                        'file': '%s' % bodys['url']}},
+                    {'type': 'text', 'data': {
+                        'text': '%s' % bodys['url']}},
                     {'type': 'text', 'data': {
                         'text': '\n%s' % self.stamp_to_str(data['msgTime'])}}
                 ]

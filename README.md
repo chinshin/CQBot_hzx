@@ -20,6 +20,12 @@
 
 ## 更新记录
 
+**2019.04.22更新：** `koudai48.py` 改进
+
+1.修改了`koudai48.py`： 改进log部分，酷Qpro部分。
+
+2.更新了`io.github.richardchien.coolqhttpapi.cpk`，该4.x版本需要 [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/zh-cn/download/confirmation.aspx?id=48145)的x86环境，如果报msvp140.dll缺失请安装该依赖。现在可以正常发送语音和图片了。
+
 ***2019.04.16更新：*** **口袋48改版**。
 
 修改了`koudai48.py`、`main.py`、`setting.py`、`setting.conf`，使用了新接口，感谢t\*\*z、b\*\*、z\*、y\*\*等等的share。
