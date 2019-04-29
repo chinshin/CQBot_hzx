@@ -140,7 +140,7 @@ def getRoomMsg():
             for msg in msgArray:
                 for grpid in groupid():
                     bot.send_group_msg_async(
-                        group_id=376961123, message=msg, auto_escape=False)
+                        group_id=grpid, message=msg, auto_escape=False)
                     time.sleep(0.5)
                 # print(msg)
     except Exception as e:

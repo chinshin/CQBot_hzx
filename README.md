@@ -17,8 +17,18 @@
 
 环境：`Windows Server` + `Python3`
 
+CoolQ HTTP API请更新至 [最新版本4.10](https://github.com/richardchien/coolq-http-api/releases/download/v4.10.0/io.github.richardchien.coolqhttpapi.cpk)
+
 
 ## 更新记录
+
+**2019.04.22更新：** `main.py`、`group.py` fix
+
+1. 修改了`main.py` line143，修改错误；
+
+2. 修改了`group.py`的新加群事件，更新至CQHttp Python SDK对应的最新写法。
+
+3. CoolQ HTTP API请更新至[最新版本4.10](https://github.com/richardchien/coolq-http-api/releases/download/v4.10.0/io.github.richardchien.coolqhttpapi.cpk)。
 
 **2019.04.22更新：** `koudai48.py` 改进
 

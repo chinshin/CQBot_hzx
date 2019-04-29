@@ -54,7 +54,7 @@ def handle_msg(context):
 
 
 # 新人加群提醒
-@bot.on_event('group_increase')
+@bot.on_notice('group_increase')
 def handle_group_increase(context):
     if context['group_id'] == setting.groupid()[0]:
         # ret = bot.get_stranger_info(user_id=context['user_id'], no_cache=False)
@@ -63,7 +63,7 @@ def handle_group_increase(context):
         {'type': 'at', 'data': {'qq': str(context['user_id'])}},
         {'type': 'text', 'data': {'text': ' 加入本群\n\n%s' % setting.welcome()}}
         ]
-        bot.send(context, message=welcome, is_raw=True)  # 发送欢迎新人
+        bot.send(context, message=welcome, auto_escape=True)  # 发送欢迎新人
 
 
 # 如果修改了端口，请修改http-API插件的配置文件中对应的post_url
