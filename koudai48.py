@@ -324,3 +324,69 @@ class Koudai:
             # raise e
             WARN("error when getlivedetail", e)
             return False, False
+
+    def getAllPage(self):
+        roomId, ownerId = setting.roomId()
+        url = "https://pocketapi.48.cn/im/api/v1/chatroom/msg/list/all"
+        form = {
+            'ownerId': int(ownerId),
+            'roomId': int(roomId)
+        }
+        header = {
+            'Host': 'pocketapi.48.cn',
+            'accept': '*/*',
+            'Accept-Language': 'zh-Hans-CN;q=1',
+            'User-Agent': 'PocketFans201807/6.0.0 (iPhone; iOS 12.2; Scale/2.00)',
+            'Accept-Encoding': 'gzip, deflate',
+            'appInfo': '{"vendor":"apple","deviceId":"0","appVersion":"6.0.0","appBuild":"190409","osVersion":"12.2.0","osType":"ios","deviceName":"iphone","os":"ios"}',
+            'Content-Type': 'application/json;charset=utf-8',
+            'Connection': 'keep-alive',
+            'token': setting.token()
+        }
+        try:
+            response = requests.post(
+                url,
+                data=json.dumps(form),
+                headers=header,
+                verify=False,
+                timeout=15).json()
+            # return response
+        except Exception as e:
+            WARN("Error when Koudai48.getAllPage", e)
+            return False
+        else:
+            if int(response['status']) != 200:
+                INFO("request fail when Koudai48.getAllPage.status", response)
+                return False
+        return response
+
+    def getVoteMsg(self, interval_sec):
+        response = self.getAllPage()
+        if not response:
+            return False
+        datas = response['content']['message']
+        msg_array = []
+        try:
+            for data in datas:
+                # 去掉旧于大于一个查询间隔的消息
+                if data['msgTime'] <= self.sysTime13 - 1000.0*interval_sec:
+                    continue
+                msg = ""
+                extInfo = json.loads(data['extInfo'])
+                if data['msgType'] == 'TEXT' and extInfo['messageType'] == 'PRESENT_TEXT':
+                    # present msg
+                    if extInfo['giftInfo']['isVote']:
+                        # vote msg
+                        msg = [{'type': 'text', 'data': {
+                            'text': '%s：投出了%d票' % (extInfo['user']['nickName'], int(extInfo['giftInfo']['giftNum']))}},
+                            {'type': 'text', 'data': {
+                                'text': '\n%s' % self.stamp_to_str(data['msgTime'])}}]
+                        msg_array.append(msg)
+        except Exception as e:
+            WARN("Error when Koudai48.getAllPage.cmts_array", e)
+            return False
+        else:
+            if msg_array:
+                return msg_array
+            else:
+                return False

@@ -22,6 +22,8 @@ CoolQ HTTP API请更新至 [最新版本4.10](https://github.com/richardchien/co
 
 ## 更新记录
 
+**2019.06.09更新：** `main.py`、`koudai48.py` 增加2019总选投票播报
+
 **2019.04.22更新：** `main.py`、`group.py` fix
 
 1. 修改了`main.py` line143，修改错误；

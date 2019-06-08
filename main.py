@@ -143,6 +143,14 @@ def getRoomMsg():
                         group_id=grpid, message=msg, auto_escape=False)
                     time.sleep(0.5)
                 # print(msg)
+        # 2019 投票播报
+        ticket_msg = koudai.getVoteMsg(int(interval_kd))
+        if ticket_msg:
+            for msg in ticket_msg:
+                for grpid in groupid():
+                    bot.send_group_msg_async(
+                        group_id=grpid, message=msg, auto_escape=False)
+                    time.sleep(0.5)
     except Exception as e:
         # raise e
         WARN('error when getRoomMsg', e)
