@@ -146,6 +146,7 @@ def getRoomMsg():
         # 2019 投票播报
         ticket_msg = koudai.getVoteMsg(int(interval_kd))
         if ticket_msg:
+            ticket_msg.reverse()
             for msg in ticket_msg:
                 for grpid in groupid():
                     bot.send_group_msg_async(
