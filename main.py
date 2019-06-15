@@ -8,7 +8,6 @@ from setting import groupid, md_interval, kd_interval, wb_interval
 from CQLog import INFO, WARN
 # 引入时间调度器 apscheduler 的 BlockingScheduler
 from apscheduler.schedulers.blocking import BlockingScheduler
-# 引入抽卡
 from lottery import check_new, init_db
 
 
@@ -34,12 +33,11 @@ version = version_dict['coolq_edition']
 
 # 初始化数据库
 init_db()
-print('初始化db success')
 
 
 def getModian():
     try:
-        INFO('check modian')
+        INFO('check lottery')
         msgs = check_new()
         for msg in msgs:
             for grpid in groupid():
@@ -47,8 +45,9 @@ def getModian():
                     group_id=grpid, message=msg, auto_escape=False)
                 time.sleep(0.5)
     except Exception as e:
-        WARN('error when getModian', e)
+        WARN('error when getModian', e, "modian dict:", msgDict_array[-1])
     finally:
+        # INFO(printStrTime() + 'modian check completed')
         INFO('modian check completed')
 
 
@@ -140,9 +139,10 @@ def getRoomMsg():
                         group_id=grpid, message=msg, auto_escape=False)
                     time.sleep(0.5)
                 # print(msg)
-        # 临时增加2018总选房间投票播报
-        ticket_msg = koudai.msg_ticket(kd_interval())
+        # 2019 投票播报
+        ticket_msg = koudai.getVoteMsg(int(interval_kd))
         if ticket_msg:
+            ticket_msg.reverse()
             for msg in ticket_msg:
                 for grpid in groupid():
                     bot.send_group_msg_async(

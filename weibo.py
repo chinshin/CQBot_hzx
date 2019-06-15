@@ -21,7 +21,7 @@ class Weibo:
             'containerid': int(setting.weibo_id()),
         }
         # 设置response
-        self.response = requests.post(url, form, headers=header).json()
+        self.response = requests.post(url, form, headers=header, timeout=5).json()
         # 设置id序列
         self.IdArray = self.getIdArray()
 

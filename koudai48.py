@@ -33,42 +33,49 @@ class Koudai:
             self.response = res
             # 获取最新口袋消息时间
             self.kdmsgTime13 = self.getKdmsgTime13()
-        elif res['status'] == 401:
-            WARN('koudai48.py授权验证失败')
+        elif res['status'] >= 401000:
+            WARN('koudai48.py授权验证失败', res)
             if not setting.token_verify():
                 WARN('token失效，尝试获取新token')
-                setting.getNewToken()
+                refresh_token = setting.getNewToken()
+                INFO("get new token ->", refresh_token)
         else:
             WARN('获取口袋房间信息出错', res['message'])
 
+    def stamp_to_str(self, timestamp):
+        x = time.localtime(timestamp / 1000)
+        time_str = time.strftime('%Y-%m-%d %H:%M:%S', x)
+        return time_str
+
     # 请求口袋房间
     def getMainpage(self):
-        url = 'https://pjuju.48.cn/imsystem/api/im/v1/member/room/message/mainpage'
+        roomId, ownerId = setting.roomId()
+        url = "https://pocketapi.48.cn/im/api/v1/chatroom/msg/list/homeowner"
+        form = {
+            'ownerId': int(ownerId),
+            'roomId': int(roomId)
+        }
         header = {
-            'Host': 'pjuju.48.cn',
-            'version': '5.0.1',
-            'os': 'android',
-            'Accept-Encoding': 'gzip',
-            'IMEI': '866716037825810',
-            'User-Agent': 'Mobile_Pocket',
-            'Content-Length': '67',
-            'Connection': 'Keep-Alive',
+            'Host': 'pocketapi.48.cn',
+            'accept': '*/*',
+            'Accept-Language': 'zh-Hans-CN;q=1',
+            'User-Agent': 'PocketFans201807/6.0.0 (iPhone; iOS 12.2; Scale/2.00)',
+            'Accept-Encoding': 'gzip, deflate',
+            'appInfo': '{"vendor":"apple","deviceId":"0","appVersion":"6.0.0","appBuild":"190409","osVersion":"12.2.0","osType":"ios","deviceName":"iphone","os":"ios"}',
             'Content-Type': 'application/json;charset=utf-8',
+            'Connection': 'keep-alive',
             'token': setting.token()
         }
-        form = {
-            "lastTime": 0,
-            "limit": 10,
-            "chatType": 0,
-            "roomId": setting.roomId()
-        }
-        res = requests.post(
-            url,
-            data=json.dumps(form),
-            headers=header,
-            verify=False
-        ).json()
-        return res
+        try:
+            response = requests.post(
+                url,
+                data=json.dumps(form),
+                headers=header,
+                verify=False,
+                timeout=15).json()
+            return response
+        except Exception as e:
+            raise e
 
     def getSysTime13(self):
         t = int(time.time() * 1000)
@@ -83,7 +90,7 @@ class Koudai:
         setting.write_kdmsg_time13(t)
 
     def getKdmsgTime13(self):
-        t = self.response['content']['data'][0]['msgTime']
+        t = self.response['content']['message'][0]['msgTime']
         return t
 
     # 检查新消息
@@ -110,7 +117,7 @@ class Koudai:
     # 酷Qair消息
     def msgAir(self):
         msg_array = []
-        datas = self.response['content']['data']
+        datas = self.response['content']['message']
         for data in datas:
             # 判断重复
             if data['msgTime'] <= self.cfgTime13:
@@ -118,63 +125,64 @@ class Koudai:
             #
             # 文字消息
             extInfo = json.loads(data['extInfo'])
-            if data['msgType'] == 0:
-                if extInfo['messageObject'] == 'text':
+            if data['msgType'] == 'TEXT':
+                if extInfo['messageType'] == 'TEXT':
                     msg = ('%s：%s\n%s' % (
-                        extInfo['senderName'],
+                        extInfo['user']['nickName'],
                         extInfo['text'],
-                        data['msgTimeStr']))
-                elif extInfo['messageObject'] == 'faipaiText':
-                    # 20171221 16:38 黄子璇(roomid=9108720)发生err：翻牌信息未返回faipaiName
-                    try:
-                        msg = ('%s：%s\n%s：%s\n%s' % (
-                            extInfo['senderName'], extInfo['messageText'],
-                            extInfo['faipaiName'], extInfo['faipaiContent'],
-                            data['msgTimeStr']))
-                    except Exception as e:
-                        msg = ('%s：%s\n翻牌：%s\n%s' % (
-                            extInfo['senderName'], extInfo['messageText'],
-                            extInfo['faipaiContent'], data['msgTimeStr']))
-                    #
-                elif extInfo['messageObject'] == 'live':
-                    msg = ('小偶像开视频直播啦 \n直播标题：%s \n直播封面：https://source.48.\
-                        cn%s \n开始时间：%s \n直播地址：https://h5.48.cn/2017appshare/memberLiveShare/index.html?id=%s' % (
-                        extInfo['referenceContent'],
-                        extInfo['referencecoverImage'], data['msgTimeStr'],
-                        extInfo['referenceObjectId']))
-                elif extInfo['messageObject'] == 'diantai':
-                    msg = ('小偶像开电台啦 \n电台标题：%s \n电台封面：https://source.48.cn%s \n开始时间：%s \n电台地址：https://h5.48.cn/2017appshare/\
-                        memberLiveShare/index.html?id=%s' % (
-                        extInfo['referenceContent'],
-                        extInfo['referencecoverImage'], data['msgTimeStr'],
-                        extInfo['referenceObjectId']))
-                elif extInfo['messageObject'] == 'idolFlip':
+                        self.stamp_to_str(data['msgTime'])))
+                elif extInfo['messageType'] == 'REPLY':
+                    msg = ('%s：%s\n%s：%s\n%s' % (
+                        extInfo['replyName'], extInfo['replyText'],
+                        extInfo['user']['nickName'], extInfo['text'],
+                        self.stamp_to_str(data['msgTime'])))
+                elif extInfo['messageType'] == 'LIVEPUSH':
+                    playStreamPath, playDetail = self.getlivedetail(extInfo['liveId'])
+                    if not playStreamPath:
+                        playStreamPath = "暂无"
+                    if playDetail['content']['type'] == 1:
+                        msg = ('小偶像开直播啦 \n直播标题：%s \n直播封面：https://source.48.cn%s \n直播地址：https://h5.48.cn/2019appshare/memberLiveShare/index.html?id=%s \n推流地址：%s\n%s' % (
+                            extInfo['liveTitle'],
+                            extInfo['liveCover'], extInfo['liveId'],
+                            playStreamPath, self.stamp_to_str(data['msgTime'])))
+                    elif playDetail['content']['type'] == 2:
+                        msg = ('小偶像开电台啦 \n电台标题：%s \n电台封面：https://source.48.cn%s \n电台地址：https://h5.48.cn/2019appshare/memberLiveShare/index.html?id=%s \n推流地址：%s\n%s' % (
+                            extInfo['liveTitle'],
+                            extInfo['liveCover'], extInfo['liveId'],
+                            playStreamPath, self.stamp_to_str(data['msgTime'])))
+                    else:
+                        msg = '有未知格式的直播消息'
+                        INFO('有未知格式的直播消息')
+                elif extInfo['messageType'] == 'VOTE':
+                    msg = ('%s：发起了投票：\n%s\n%s' % (
+                        extInfo['user']['nickName'], extInfo['text'],
+                        self.stamp_to_str(data['msgTime'])))
+                elif extInfo['messageType'] == 'FLIPCARD':
                     # INFO('idol翻牌')
                     msg = ('%s：%s\n问题内容：%s\n%s' % (
-                        extInfo['senderName'], extInfo['idolFlipTitle'],
-                        extInfo['idolFlipContent'], data['msgTimeStr']))
-                # 自己发的消息
-                elif extInfo['messageObject'] == 'messageBoard':
-                    pass
+                        extInfo['user']['nickName'], extInfo['answer'],
+                        extInfo['question'], self.stamp_to_str(data['msgTime'])))
                 else:
                     msg = '有未知格式的文字消息'
                     INFO('有未知格式的文字消息')
-                    INFO(extInfo)
+                    INFO(data)
             # image
-            elif data['msgType'] == 1:
+            elif data['msgType'] == 'IMAGE':
                 bodys = json.loads(data['bodys'])
                 msg = ('%s：图片消息：%s\n%s' % (
-                    extInfo['senderName'], bodys['url'], data['msgTimeStr']))
+                    extInfo['user']['nickName'], bodys['url'], self.stamp_to_str(data['msgTime'])))
             # voice
-            elif data['msgType'] == 2:
-                bodys = json.loads(data['bodys'])
-                msg = ('%s：语音消息：%s\n%s' % (
-                    extInfo['senderName'], bodys['url'], data['msgTimeStr']))
-            # video
-            elif data['msgType'] == 3:
+            elif data['msgType'] == 'VIDEO':
                 bodys = json.loads(data['bodys'])
                 msg = ('%s：视频消息：%s\n%s' % (
-                    extInfo['senderName'], bodys['url'], data['msgTimeStr']))
+                    extInfo['user']['nickName'], bodys['url'], self.stamp_to_str(data['msgTime'])))
+            # video
+            elif data['msgType'] == 'AUDIO':
+                bodys = json.loads(data['bodys'])
+                msg = ('%s：语音消息：%s\n%s' % (
+                    extInfo['user']['nickName'], bodys['url'], self.stamp_to_str(data['msgTime'])))
+            elif data['msgType'] == 'EXPRESS':
+                msg = ("%s: 发送了表情\n%s" % (extInfo['user']['nickName'], self.stamp_to_str(data['msgTime'])))
             else:
                 msg = '有未知类型的消息'
                 INFO('有未知类型的消息')
@@ -185,7 +193,7 @@ class Koudai:
     # 酷QPro消息
     def msgPro(self):
         msg_array = []
-        datas = self.response['content']['data']
+        datas = self.response['content']['message']
         for data in datas:
             # 判断重复
             if data['msgTime'] <= self.cfgTime13:
@@ -193,83 +201,91 @@ class Koudai:
             #
             # 文字消息
             extInfo = json.loads(data['extInfo'])
-            if data['msgType'] == 0:
-                if extInfo['messageObject'] == 'text':
+            if data['msgType'] == 'TEXT':
+                if extInfo['messageType'] == 'TEXT':
                     msg = ('%s：%s\n%s' % (
-                        extInfo['senderName'],
+                        extInfo['user']['nickName'],
                         extInfo['text'],
-                        data['msgTimeStr']))
-                elif extInfo['messageObject'] == 'faipaiText':
-                    # 20171221 16:38 黄子璇(roomid=9108720)发生err：翻牌信息未返回faipaiName
-                    try:
-                        msg = ('%s：%s\n%s：%s\n%s' % (
-                            extInfo['senderName'], extInfo['messageText'],
-                            extInfo['faipaiName'], extInfo['faipaiContent'],
-                            data['msgTimeStr']))
-                    except Exception as e:
-                        msg = ('%s：%s\n翻牌：%s\n%s' % (
-                            extInfo['senderName'], extInfo['messageText'],
-                            extInfo['faipaiContent'], data['msgTimeStr']))
-                    #
-                elif extInfo['messageObject'] == 'live':
-                    msg = [{'type': 'text', 'data': {
-                        'text': '小偶像开视频直播啦 \n 直播标题：%s \n \
-                        直播封面：' % extInfo['referenceContent']}},
-                        {'type': 'image', 'data': {
-                            'file': 'https://source.48.cn%s' % extInfo['referencecoverImage']}},
-                        {'type': 'text', 'data': {
-                            'text': '\n开始时间：%s \n 直播地址：https://h5.48.cn/2017appshare/memberLiveShare/index.html?id=%s' % (
-                                data['msgTimeStr'],
-                                extInfo['referenceObjectId'])}}
-                    ]
-                elif extInfo['messageObject'] == 'diantai':
-                    msg = [{'type': 'text', 'data': {
-                        'text': '小偶像开电台啦 \n 电台标题：%s \n \
-                        电台封面：' % extInfo['referenceContent']}},
-                        {'type': 'image', 'data': {
-                            'file': 'https://source.48.cn%s' % extInfo['referencecoverImage']}},
-                        {'type': 'text', 'data': {
-                            'text': '\n开始时间：%s \n 电台地址：https://h5.48.cn/2017appshare/memberLiveShare/index.html?id=%s' % (
-                                data['msgTimeStr'],
-                                extInfo['referenceObjectId'])}}
-                    ]
-                elif extInfo['messageObject'] == 'idolFlip':
+                        self.stamp_to_str(data['msgTime'])))
+                elif extInfo['messageType'] == 'REPLY':
+                    msg = ('%s：%s\n%s：%s\n%s' % (
+                        extInfo['replyName'], extInfo['replyText'],
+                        extInfo['user']['nickName'], extInfo['text'],
+                        self.stamp_to_str(data['msgTime'])))
+                elif extInfo['messageType'] == 'LIVEPUSH':
+                    playStreamPath, playDetail = self.getlivedetail(extInfo['liveId'])
+                    if not playStreamPath:
+                        playStreamPath = "暂无"
+                    if playDetail['content']['type'] == 1:
+                        msg = [{'type': 'text', 'data': {
+                            'text': '小偶像开直播啦 \n 直播标题：%s \n直播封面：' % extInfo['liveTitle']}},
+                            {'type': 'image', 'data': {
+                                'file': 'https://source.48.cn%s' % extInfo['liveCover']}},
+                            {'type': 'text', 'data': {
+                                'text': '直播地址https://h5.48.cn/2019appshare/memberLiveShare/index.html?id=%s \n推流地址：%s开始时间：%s' % (
+                                    extInfo['liveId'],
+                                    playStreamPath,
+                                    self.stamp_to_str(data['msgTime']))}}
+                        ]
+                    elif playDetail['content']['type'] == 2:
+                        msg = [{'type': 'text', 'data': {
+                            'text': '小偶像开电台啦 \n 电台标题：%s \n电台封面：' % extInfo['liveTitle']}},
+                            {'type': 'image', 'data': {
+                                'file': 'https://source.48.cn%s' % extInfo['liveCover']}},
+                            {'type': 'text', 'data': {
+                                'text': '电台地址https://h5.48.cn/2019appshare/memberLiveShare/index.html?id=%s \n推流地址：%s开始时间：%s' % (
+                                    extInfo['liveId'],
+                                    playStreamPath,
+                                    self.stamp_to_str(data['msgTime']))}}
+                        ]
+                    else:
+                        msg = '有未知格式的直播消息'
+                        INFO('有未知格式的直播消息')
+                elif extInfo['messageType'] == 'VOTE':
+                    msg = ('%s：发起了投票：\n%s\n%s' % (
+                        extInfo['user']['nickName'], extInfo['text'],
+                        self.stamp_to_str(data['msgTime'])))
+                elif extInfo['messageType'] == 'FLIPCARD':
                     # INFO('idol翻牌')
                     msg = ('%s：%s\n问题内容：%s\n%s' % (
-                        extInfo['senderName'], extInfo['idolFlipTitle'],
-                        extInfo['idolFlipContent'], data['msgTimeStr']))
-                # 自己发的消息
-                elif extInfo['messageObject'] == 'messageBoard':
-                    pass
+                        extInfo['user']['nickName'], extInfo['answer'],
+                        extInfo['question'], self.stamp_to_str(data['msgTime'])))
                 else:
                     msg = '有未知格式的文字消息'
                     INFO('有未知格式的文字消息')
                     INFO(extInfo)
-            # image
-            elif data['msgType'] == 1:
+            # image extInfo['user']['nickName'], bodys['url'], self.stamp_to_str(data['msgTime'])
+            elif data['msgType'] == 'IMAGE':
                 bodys = json.loads(data['bodys'])
                 msg = [{'type': 'text', 'data': {
-                    'text': '%s：图片消息' % extInfo['senderName']}},
+                    'text': '%s：图片消息' % extInfo['user']['nickName']}},
                     {'type': 'image', 'data': {
                         'file': '%s' % bodys['url']}},
                     {'type': 'text', 'data': {
-                        'text': '\n%s' % data['msgTimeStr']}}
+                        'text': '%s' % self.stamp_to_str(data['msgTime'])}}
                 ]
-            # voice
-            elif data['msgType'] == 2:
+            # voice extInfo['user']['nickName'], bodys['url'], self.stamp_to_str(data['msgTime'])
+            elif data['msgType'] == 'AUDIO':
                 bodys = json.loads(data['bodys'])
                 msg = [{'type': 'text', 'data': {
-                    'text': '%s：语音消息' % extInfo['senderName']}},
+                    'text': '%s：语音消息' % extInfo['user']['nickName']}},
                     {'type': 'record', 'data': {
                         'file': '%s' % bodys['url']}},
                     {'type': 'text', 'data': {
-                        'text': '\n%s' % data['msgTimeStr']}}
+                        'text': '\n%s' % self.stamp_to_str(data['msgTime'])}}
                 ]
             # video
-            elif data['msgType'] == 3:
+            elif data['msgType'] == 'VIDEO':
                 bodys = json.loads(data['bodys'])
-                msg = ('%s：视频消息：%s\n%s' % (
-                    extInfo['senderName'], bodys['url'], data['msgTimeStr']))
+                msg = [{'type': 'text', 'data': {
+                    'text': '%s：视频消息' % extInfo['user']['nickName']}},
+                    {'type': 'text', 'data': {
+                        'text': '%s' % bodys['url']}},
+                    {'type': 'text', 'data': {
+                        'text': '\n%s' % self.stamp_to_str(data['msgTime'])}}
+                ]
+            elif data['msgType'] == 'EXPRESS':
+                msg = ("%s: 发送了表情\n%s" % (extInfo['user']['nickName'], self.stamp_to_str(data['msgTime'])))
             else:
                 msg = '有未知类型的消息'
                 INFO('有未知类型的消息')
@@ -277,51 +293,100 @@ class Koudai:
             msg_array.append(msg)
         return msg_array
 
-    # 2018总选额外功能，检查留言板投票
-    # 取前30条留言板消息，筛选出有投票的消息
-    def getboardpage(self):
-        cmts = []
-        url = 'https://pjuju.48.cn/imsystem/api/im/v1/member/room/message/boardpage'
+    def getlivedetail(self, liveId):
+        url = "https://pocketapi.48.cn/live/api/v1/live/getLiveOne"
+        form = {
+            "liveId": str(liveId)
+        }
         header = {
-            'Host': 'pjuju.48.cn',
-            'version': '5.0.1',
-            'os': 'android',
-            'Accept-Encoding': 'gzip',
-            'IMEI': '866716037825810',
-            'User-Agent': 'Mobile_Pocket',
-            'Content-Length': '67',
-            'Connection': 'Keep-Alive',
+            'Host': 'pocketapi.48.cn',
+            'accept': '*/*',
+            'Accept-Language': 'zh-Hans-CN;q=1',
+            'User-Agent': 'PocketFans201807/6.0.0 (iPhone; iOS 12.2; Scale/2.00)',
+            'Accept-Encoding': 'gzip, deflate',
+            'appInfo': '{"vendor":"apple","deviceId":"0","appVersion":"6.0.0","appBuild":"190409","osVersion":"12.2.0","osType":"ios","deviceName":"iphone","os":"ios"}',
             'Content-Type': 'application/json;charset=utf-8',
+            'Connection': 'keep-alive'
+        }
+        try:
+            response = requests.post(
+                url,
+                data=json.dumps(form),
+                headers=header,
+                verify=False,
+                timeout=15).json()
+            if response['status'] == 200:
+                playStreamPath = response['content']['playStreamPath']
+                return playStreamPath, response
+            else:
+                return False, False
+        except Exception as e:
+            # raise e
+            WARN("error when getlivedetail", e)
+            return False, False
+
+    def getAllPage(self):
+        roomId, ownerId = setting.roomId()
+        url = "https://pocketapi.48.cn/im/api/v1/chatroom/msg/list/all"
+        form = {
+            'ownerId': int(ownerId),
+            'roomId': int(roomId)
+        }
+        header = {
+            'Host': 'pocketapi.48.cn',
+            'accept': '*/*',
+            'Accept-Language': 'zh-Hans-CN;q=1',
+            'User-Agent': 'PocketFans201807/6.0.0 (iPhone; iOS 12.2; Scale/2.00)',
+            'Accept-Encoding': 'gzip, deflate',
+            'appInfo': '{"vendor":"apple","deviceId":"0","appVersion":"6.0.0","appBuild":"190409","osVersion":"12.2.0","osType":"ios","deviceName":"iphone","os":"ios"}',
+            'Content-Type': 'application/json;charset=utf-8',
+            'Connection': 'keep-alive',
             'token': setting.token()
         }
-        form = {
-            "lastTime": 0,
-            "limit": 30,
-            "isFirst": True,
-            "roomId": setting.roomId()
-        }
-        res = requests.post(
-            url,
-            data=json.dumps(form),
-            headers=header,
-            verify=False
-        ).json()
-        for data in res['content']['data']:
-            extInfo = json.loads(data['extInfo'])
-            if "giftId" in extInfo and "voteticket" in extInfo['giftId']:
-                cmts.append((extInfo['senderName'], extInfo['giftName'], data['msgTimeStr'], data['msgTime']))
-        return cmts
-
-    # 根据传入的时间间隔筛选投票消息，并包装str消息返回
-    def msg_ticket(self, interval_sec):
-        msgs = []
-        cmts = self.getboardpage()
-        if not cmts:
+        try:
+            response = requests.post(
+                url,
+                data=json.dumps(form),
+                headers=header,
+                verify=False,
+                timeout=15).json()
+            # return response
+        except Exception as e:
+            WARN("Error when Koudai48.getAllPage", e)
             return False
-        for cmt in cmts:
-            if cmt[3] > self.sysTime13 - 1000.0*interval_sec:
-                msg = '%s：投了%s\n%s' % (cmt[0], cmt[1], cmt[2])
-            msgs.append(msg)
-        return msgs
+        else:
+            if int(response['status']) != 200:
+                INFO("request fail when Koudai48.getAllPage.status", response)
+                return False
+        return response
 
-#
+    def getVoteMsg(self, interval_sec):
+        response = self.getAllPage()
+        if not response:
+            return False
+        datas = response['content']['message']
+        msg_array = []
+        try:
+            for data in datas:
+                # 去掉旧于大于一个查询间隔的消息
+                if data['msgTime'] <= self.sysTime13 - 1000.0*interval_sec:
+                    continue
+                msg = ""
+                extInfo = json.loads(data['extInfo'])
+                if data['msgType'] == 'TEXT' and extInfo['messageType'] == 'PRESENT_TEXT':
+                    # present msg
+                    if extInfo['giftInfo']['isVote']:
+                        # vote msg
+                        msg = [{'type': 'text', 'data': {
+                            'text': '%s：投出了%d票' % (extInfo['user']['nickName'], int(extInfo['giftInfo']['giftNum']))}},
+                            {'type': 'text', 'data': {
+                                'text': '\n%s' % self.stamp_to_str(data['msgTime'])}}]
+                        msg_array.append(msg)
+        except Exception as e:
+            WARN("Error when Koudai48.getAllPage.cmts_array", e)
+            return False
+        else:
+            if msg_array:
+                return msg_array
+            else:
+                return False

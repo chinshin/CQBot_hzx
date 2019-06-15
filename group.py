@@ -2,6 +2,7 @@
 from cqhttp import CQHttp
 import setting
 import modian
+from lottery import bind_qq, inquire, patch_msg, handlePointPickMsg
 
 
 bot = CQHttp(api_root='http://127.0.0.1:5700/')
@@ -51,13 +52,13 @@ def handle_msg(context):
             for jd_msg in jd_array:
                 jd += jd_msg + '\n'
             bot.send(context, jd)
+        # lottery
         # 抽卡相关
-        from lottery import bind_qq, inquire
         if context['message'] == '抽卡':
-            lot_reg = "卡池:包括普通卡N和稀有卡R、SR、UR\n" +\
-                "抽卡:包括单抽和连抽，集资10.7～106.99抽1次，金额越高越容易出稀有卡(不含ur)；" +\
-                "107及以上11连抽，保底1张sr，连抽稀有卡(含ur)更容易出现喔\n" +\
-                "卡池共有N卡n张，R卡r张，SR卡sr张，UR卡ur张。抽满奖励bonus\n" +\
+            lot_reg = "卡池:包括R卡11张、SR卡11张、SSR卡11张\n" +\
+                "10.7～106.99是单抽，每10.7抽一次，只能抽到R和SR\n" +\
+                "107~519.99是【3】连抽，可以抽到R、SR、SSR\n" +\
+                "520及以上是【11】连抽，保底SR一张\n" +\
                 "【抽卡链接】:\n"
             ck_array = modian.md_init(setting.pro_id())
             for ck_dict in ck_array:
@@ -94,10 +95,20 @@ def handle_msg(context):
                     bot.send(context, "绑定成功")
                 else:
                     bot.send(context, "绑定失败")
+        if context['message'].startswith('积分抽'):
+            if context['message'][3:] in ["R", "SR", "SSR"]:
+                jfck_msg = handlePointPickMsg(context['message'], context['user_id'])
+            else:
+                jfck_msg = "重复的卡牌会自动转为积分(R:5点, SR:20点, SSR:100点)\n" +\
+                        "已绑定摩点的用户可以用积分抽卡\n" +\
+                        " 积分抽R   会消耗40积分随机抽一张R卡\n" +\
+                        " 积分抽SR  会消耗100积分随机抽一张SR卡\n" +\
+                        " 积分抽SSR 会消耗400积分随机抽一张SSR卡"
+            bot.send(context, jfck_msg)
 
 
 # 新人加群提醒
-@bot.on_event('group_increase')
+@bot.on_notice('group_increase')
 def handle_group_increase(context):
     if context['group_id'] == setting.groupid()[0]:
         # ret = bot.get_stranger_info(user_id=context['user_id'], no_cache=False)
@@ -106,7 +117,7 @@ def handle_group_increase(context):
         {'type': 'at', 'data': {'qq': str(context['user_id'])}},
         {'type': 'text', 'data': {'text': ' 加入本群\n\n%s' % setting.welcome()}}
         ]
-        bot.send(context, message=welcome, is_raw=True)  # 发送欢迎新人
+        bot.send(context, message=welcome, auto_escape=True)  # 发送欢迎新人
 
 
 # 如果修改了端口，请修改http-API插件的配置文件中对应的post_url

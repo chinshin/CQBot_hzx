@@ -112,7 +112,6 @@ def md_interval():
 
 
 # 口袋48:roomId
-# 黄子璇roomId：9108720
 def roomId():
     BASE_DIR = os.path.dirname(__file__)
     file_path = os.path.join(BASE_DIR, 'setting.conf')
@@ -120,14 +119,9 @@ def roomId():
     # with open(file_path, 'r') as cfgfile:
     with open(file_path, 'r', encoding='utf-8') as cfgfile:
         cf.readfp(cfgfile)
-        group = cf.get('idol', 'group')
-        name = cf.get('idol', 'name')
-        file_path = os.path.join(BASE_DIR, 'roomID.conf')
-        # with open(file_path, 'r') as cfgfile2:
-        with open(file_path, 'r', encoding='utf-8', errors='ignore') as cfgfile2:
-            cf.readfp(cfgfile2)
-            roomid = cf.get(group, name)
-    return int(roomid)
+        roomId = cf.get('koudai48', 'roomId')
+        ownerId = cf.get('koudai48', 'ownerId')
+    return int(roomId), int(ownerId)
 
 
 # 获取配置中存储的口袋房间消息时间
@@ -154,7 +148,6 @@ def write_kdmsg_time13(msgtime13):
 
 
 # 获取配置中存储的token
-# token 存活时间为 30 天
 def token():
     BASE_DIR = os.path.dirname(__file__)
     file_path = os.path.join(BASE_DIR, 'setting.conf')
@@ -181,25 +174,27 @@ def token_verify():
         # user = cf.get('koudai48', 'user')
         # password = cf.get('koudai48', 'password')
         token = cf.get('koudai48', 'token')
-
-    ajax_url = 'https://puser.48.cn/usersystem/api/user/v1/show/cardInfo'
+    url = 'https://pocketapi.48.cn/user/api/v1/user/info/home'
+    form = {
+        "userId": 1
+    }
     header = {
-        'Host': 'puser.48.cn',
-        'version': '5.0.1',
-        'os': 'android',
-        'Accept-Encoding': 'gzip',
-        'IMEI': '866716037125810',
-        'User-Agent': 'Mobile_Pocket',
-        'Content-Length': '0',
-        'Connection': 'Keep-Alive',
+        'Host': 'pocketapi.48.cn',
+        'accept': '*/*',
+        'Accept-Language': 'zh-Hans-CN;q=1',
+        'User-Agent': 'PocketFans201807/6.0.0 (iPhone; iOS 12.2; Scale/2.00)',
+        'Accept-Encoding': 'gzip, deflate',
+        'appInfo': '{"vendor":"apple","deviceId":"0","appVersion":"6.0.0","appBuild":"190409","osVersion":"12.2.0","osType":"ios","deviceName":"iphone","os":"ios"}',
         'Content-Type': 'application/json;charset=utf-8',
+        'Connection': 'keep-alive',
         'token': token
     }
     response = requests.post(
-        ajax_url,
-        headers=header,
-        verify=False
-    ).json()
+            url,
+            data=json.dumps(form),
+            headers=header,
+            verify=False,
+            timeout=15).json()
     if response['status'] == 200:
         return True
     else:
@@ -217,26 +212,22 @@ def getNewToken():
         # koudai48
         user = cf.get('koudai48', 'user')
         password = cf.get('koudai48', 'password')
-        token = cf.get('koudai48', 'token')
+        # token = cf.get('koudai48', 'token')
         # request
-        ajax_url = 'https://puser.48.cn/usersystem/api/user/v1/login/phone'
+        ajax_url = "https://pocketapi.48.cn/user/api/v1/login/app/mobile"
         header = {
-            'Host': 'puser.48.cn',
-            'version': '5.0.1',
-            'os': 'android',
-            'Accept-Encoding': 'gzip',
-            'IMEI': '866716037125810',
-            'User-Agent': 'Mobile_Pocket',
-            'Content-Length': '75',
-            'Connection': 'Keep-Alive',
+            'Host': 'pocketapi.48.cn',
+            'accept': '*/*',
+            'Accept-Language': 'zh-Hans-CN;q=1',
+            'User-Agent': 'PocketFans201807/6.0.0 (iPhone; iOS 12.2; Scale/2.00)',
+            'Accept-Encoding': 'gzip, deflate',
+            'appInfo': '{"vendor":"apple","deviceId":"0","appVersion":"6.0.0","appBuild":"190409","osVersion":"12.2.0","osType":"ios","deviceName":"iphone","os":"ios"}',
             'Content-Type': 'application/json;charset=utf-8',
-            'token': '0'
+            'Connection': 'keep-alive'
         }
         form = {
-            "latitude": 0,
-            "longitude": 0,
-            "password": password,
-            "account": user
+            "mobile": user,
+            "pwd": password
         }
         response = requests.post(
             ajax_url,
@@ -388,6 +379,21 @@ def proxy():
 
 
 def get_short_url(long_url_str):
+    url = 'http://api.t.sina.com.cn/short_url/shorten.json?source=3271760578&url_long=' + str(long_url_str)
+    response = requests.get(
+        url,
+        verify=False
+        ).json()
+    # print(response)
+    return response[0]['url_short']
+
+
+# -------------------------------------------------------
+
+# ---------------------长网址转短网址----------------------------
+
+
+def bang_api_token(type, token_value):
     url = 'http://api.t.sina.com.cn/short_url/shorten.json?source=3271760578&url_long=' + str(long_url_str)
     response = requests.get(
         url,
