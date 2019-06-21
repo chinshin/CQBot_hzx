@@ -379,28 +379,26 @@ def proxy():
 
 
 def get_short_url(long_url_str):
-    url = 'http://api.t.sina.com.cn/short_url/shorten.json?source=3271760578&url_long=' + str(long_url_str)
-    response = requests.get(
-        url,
-        verify=False
-        ).json()
-    # print(response)
-    return response[0]['url_short']
-
-
-# -------------------------------------------------------
-
-# ---------------------长网址转短网址----------------------------
-
-
-def bang_api_token(type, token_value):
-    url = 'http://api.t.sina.com.cn/short_url/shorten.json?source=3271760578&url_long=' + str(long_url_str)
-    response = requests.get(
-        url,
-        verify=False
-        ).json()
-    # print(response)
-    return response[0]['url_short']
+    return str(long_url_str)
+    try:
+        url = 'http://api.t.sina.com.cn/short_url/shorten.json?source=3271760578&url_long=' + str(long_url_str)
+        response = requests.get(
+            url,
+            verify=False,
+            timeout=5
+            ).json()
+        urlShort = response[0]['url_short']
+        return urlShort
+    except Exception as e:
+        # print(response)
+        # return response[0]['url_short']
+        """
+        考虑换成百度短网址,等待系统收录
+        {'Code': -3, 'LongUrl': 'https://zhongchou.modian.com/item/67397.html',
+        'ErrMsg': 'this URL has not been detected and recorded, please retry after 
+        recording (normally within 24 hours). see https://dwz.cn/console/faq'}
+        """
+        return str(long_url_str)
 
 
 # -------------------------------------------------------
