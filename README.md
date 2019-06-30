@@ -152,7 +152,7 @@ CoolQ HTTP API请更新至 [最新版本4.10](https://github.com/richardchien/co
 	
 	其中`access_token`和`secret`可以不设置；
 
-5. 修改酷Q文件夹下`app\io.github.richardchien.coolqhttpapi\`下配置文件，将`post_url`的值修改为`http://127.0.0.1:8080/`，具体端口与`group.py`中最后一行设置的`bot.run`端口相同；如果在第4步中设置了`access_token`和`secret`，则也要在配置文件中设置对应项；
+5. 修改酷Q文件夹下`data\app\io.github.richardchien.coolqhttpapi\config\<QQ id>.json`下配置文件，将`post_url`的值修改为`http://127.0.0.1:8080/`，具体端口与`group.py`中最后一行设置的`bot.run`端口相同；如果在第4步中设置了`access_token`和`secret`，则也要在配置文件中设置对应项；
 6. 修改`setting.conf`，填入相关信息；
 7. 在分别终端中运行`group.py`和`main.py`。
 8. 如果有其他需求或疑问，可以先查阅 [richardchien / CoolQ HTTP API](https://github.com/richardchien/coolq-http-api) 和 [richardchien / CQHttp Python SDK](https://github.com/richardchien/cqhttp-python-sdk) 的相关文档，或者提交[Issues](https://github.com/chinshin/CQBot_hzx/issues)给我；
