@@ -6,6 +6,9 @@ import setting
 import requests
 import urllib3
 from CQLog import WARN, INFO
+import random
+import hashlib
+from base64 import b64encode
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
@@ -47,6 +50,32 @@ class Koudai:
         time_str = time.strftime('%Y-%m-%d %H:%M:%S', x)
         return time_str
 
+    def getPa(self):
+        t = int(time.time())*1000
+        r = random.randint(1000, 9999)
+        salt = "K4bMWJawAtnyyTNOa70S"
+        s = "{}{}{}".format(t, r, salt).encode("utf-8")
+        m = hashlib.md5(s).hexdigest()
+        pa = b64encode("{},{},{}".format(t, r, m).encode("utf-8"))
+        return pa
+
+    def commonHeader(self, hasToken=True, hasPa=True):
+        header = {
+            'Host': 'pocketapi.48.cn',
+            'accept': '*/*',
+            'Accept-Language': 'zh-Hans-CN;q=1',
+            'User-Agent': 'PocketFans201807/6.0.13 (iPhone; iOS 10.3.3; Scale/2.00)',
+            'Accept-Encoding': 'gzip, deflate',
+            'appInfo': '{"osType":"ios","vendor":"apple","os":"ios","appVersion":"6.0.13","osVersion":"10.3.3","deviceName":"iPhone 5","appBuild":"200513","deviceId":"DDDD-DDDD-DDDD-DDDD-DDDD"}',
+            'Content-Type': 'application/json;charset=utf-8',
+            'Connection': 'keep-alive',
+        }
+        if hasToken:
+            header['token'] = setting.token()
+        if hasPa:
+            header['pa'] = self.getPa()
+        return header
+
     # 请求口袋房间
     def getMainpage(self):
         roomId, ownerId = setting.roomId()
@@ -55,17 +84,7 @@ class Koudai:
             'ownerId': int(ownerId),
             'roomId': int(roomId)
         }
-        header = {
-            'Host': 'pocketapi.48.cn',
-            'accept': '*/*',
-            'Accept-Language': 'zh-Hans-CN;q=1',
-            'User-Agent': 'PocketFans201807/6.0.0 (iPhone; iOS 12.2; Scale/2.00)',
-            'Accept-Encoding': 'gzip, deflate',
-            'appInfo': '{"vendor":"apple","deviceId":"0","appVersion":"6.0.0","appBuild":"190409","osVersion":"12.2.0","osType":"ios","deviceName":"iphone","os":"ios"}',
-            'Content-Type': 'application/json;charset=utf-8',
-            'Connection': 'keep-alive',
-            'token': setting.token()
-        }
+        header = self.commonHeader(True, False)
         try:
             response = requests.post(
                 url,
@@ -298,16 +317,7 @@ class Koudai:
         form = {
             "liveId": str(liveId)
         }
-        header = {
-            'Host': 'pocketapi.48.cn',
-            'accept': '*/*',
-            'Accept-Language': 'zh-Hans-CN;q=1',
-            'User-Agent': 'PocketFans201807/6.0.0 (iPhone; iOS 12.2; Scale/2.00)',
-            'Accept-Encoding': 'gzip, deflate',
-            'appInfo': '{"vendor":"apple","deviceId":"0","appVersion":"6.0.0","appBuild":"190409","osVersion":"12.2.0","osType":"ios","deviceName":"iphone","os":"ios"}',
-            'Content-Type': 'application/json;charset=utf-8',
-            'Connection': 'keep-alive'
-        }
+        header = self.commonHeader(False, False)
         try:
             response = requests.post(
                 url,
@@ -332,17 +342,7 @@ class Koudai:
             'ownerId': int(ownerId),
             'roomId': int(roomId)
         }
-        header = {
-            'Host': 'pocketapi.48.cn',
-            'accept': '*/*',
-            'Accept-Language': 'zh-Hans-CN;q=1',
-            'User-Agent': 'PocketFans201807/6.0.0 (iPhone; iOS 12.2; Scale/2.00)',
-            'Accept-Encoding': 'gzip, deflate',
-            'appInfo': '{"vendor":"apple","deviceId":"0","appVersion":"6.0.0","appBuild":"190409","osVersion":"12.2.0","osType":"ios","deviceName":"iphone","os":"ios"}',
-            'Content-Type': 'application/json;charset=utf-8',
-            'Connection': 'keep-alive',
-            'token': setting.token()
-        }
+        header = self.commonHeader()
         try:
             response = requests.post(
                 url,
