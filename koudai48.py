@@ -84,7 +84,7 @@ class Koudai:
             'ownerId': int(ownerId),
             'roomId': int(roomId)
         }
-        header = self.commonHeader(True, False)
+        header = self.commonHeader()
         try:
             response = requests.post(
                 url,

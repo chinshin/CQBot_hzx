@@ -5,6 +5,8 @@ import os
 import requests
 import json
 import urllib3
+import hashlib
+from base64 import b64encode
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
@@ -19,6 +21,16 @@ def idol_name():
         # idol name
         idol_name = cf.get('idol', 'name')
     return str(idol_name)
+
+
+def getPa():
+        t = int(time.time())*1000
+        r = random.randint(1000, 9999)
+        salt = "K4bMWJawAtnyyTNOa70S"
+        s = "{}{}{}".format(t, r, salt).encode("utf-8")
+        m = hashlib.md5(s).hexdigest()
+        pa = b64encode("{},{},{}".format(t, r, m).encode("utf-8"))
+        return pa
 
 
 # ----------------------摩点微打赏设置----------------------
@@ -187,7 +199,8 @@ def token_verify():
         'appInfo': '{"vendor":"apple","deviceId":"0","appVersion":"6.0.0","appBuild":"190409","osVersion":"12.2.0","osType":"ios","deviceName":"iphone","os":"ios"}',
         'Content-Type': 'application/json;charset=utf-8',
         'Connection': 'keep-alive',
-        'token': token
+        'token': token,
+        'pa': getPa(),
     }
     response = requests.post(
             url,
